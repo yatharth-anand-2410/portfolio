@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Marginalia from '../components/Marginalia.astro';
+
+const skills = [
+  ['AI systems', 'Agentic AI, RAG, multi-agent systems, evaluation, semantic search, function calling, prompt caching, context engineering, output guardrails'],
+  ['Machine learning', 'PyTorch, TensorFlow, scikit-learn, XGBoost, NLP, time-series forecasting, transformers, interpretability, quantization, LoRA'],
+  ['Backend', 'Python, TypeScript, FastAPI, NestJS, PostgreSQL, MongoDB, Redis, event-driven and multi-tenant systems'],
+  ['Cloud', 'AWS (Lambda, ECS, SQS, S3, API Gateway, EventBridge), Docker, pgvector, CI/CD'],
+];
+---
+
+<BaseLayout title="About" description="Senior ML engineer working on production AI agents, retrieval, and the infrastructure underneath them.">
+  <section class="wrap head">
+    <p class="label reveal" style="--i:0">About</p>
+    <h1 class="reveal" style="--i:1">Hello, I'm Yatharth.</h1>
+  </section>
+
+  <section class="wrap">
+    <Marginalia>
+      <span slot="note">Now<br />Senior ML Engineer (SDE-III)<br />Zipteams, since Aug 2024<br />Bangalore</span>
+      <div class="prose reveal" style="--i:2">
+        <p class="lede">
+          I'm a senior machine learning engineer. I build AI systems that combine structured data,
+          semantic retrieval, and agentic reasoning, and I care about the unglamorous parts that make
+          them work in production: cost, memory, evaluation, and infrastructure.
+        </p>
+        <p>
+          At Zipteams I'm part of the core AI platform team, one of the first five engineers. I've led
+          the architecture of multi-channel AI agents across email and WhatsApp, covering orchestration,
+          memory, routing, and workflow execution, and cut LLM inference costs by about 50% through prompt
+          caching and context optimization. I've also built production analytics for sales intelligence
+          (pitch evaluation, intent detection, structured extraction, human-in-the-loop validation) and
+          the multi-tenant infrastructure underneath, on Python, PostgreSQL, AWS, and vector search,
+          handling millions of records.
+        </p>
+        <p>
+          Before that I was a data science intern at Farmart, forecasting commodity prices (5% MAPE on
+          30-day predictions) and building sentiment pipelines for agricultural news.
+        </p>
+        <p>
+          Outside work I take models apart: quantization, activation patching, weight surgery on Llama 3
+          with Apple's MLX. I write up what I find in <a href="/blog">Notes</a>, and I send fixes to open
+          source projects like <a href="https://github.com/getzep/graphiti">Graphiti</a>.
+        </p>
+
+        <h2>Toolkit</h2>
+        <dl class="skills">
+          {skills.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+        </dl>
+
+        <h2>Education</h2>
+        <p>B.Tech in Computer Science and Engineering, IIIT Nagpur (2020 to 2024). NLP Specialization (DeepLearning.AI) and Fundamentals of Deep Learning (NVIDIA).</p>
+      </div>
+    </Marginalia>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
+  .head h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); }
+  .lede { font-size: 1.25em; }
+  .skills { margin: 0; }
+  .skills dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-top: 1.1rem; }
+  .skills dd { margin: 0.2rem 0 0; color: var(--ink-soft); font-size: 0.95em; }
+  .prose :global(h2) { margin-top: 2.2em; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+</style>

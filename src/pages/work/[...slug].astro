@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Marginalia from '../../components/Marginalia.astro';
+
+export async function getStaticPaths() {
+  const items = await getCollection('work', (w) => !w.data.draft);
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, summary, kind, status, stack, liveUrl, repoUrl } = entry.data;
+---
+
+<BaseLayout title={title} description={summary}>
+  <article class="wrap">
+    <header class="head">
+      <p class="label reveal" style="--i:0"><a href="/work/">← Work</a></p>
+      <h1 class="reveal" style="--i:1">{title}</h1>
+      <p class="lede reveal" style="--i:2">{summary}</p>
+    </header>
+
+    <Marginalia>
+      <Fragment slot="note">
+        <dl>
+          <dt>Type</dt><dd>{kind}</dd>
+          <dt>Status</dt><dd>{status}</dd>
+          <dt>Stack</dt><dd>{stack.join(', ')}</dd>
+          {liveUrl && <><dt>Live</dt><dd><a href={liveUrl}>Open the product</a></dd></>}
+          {repoUrl && <><dt>Source</dt><dd><a href={repoUrl}>GitHub repository</a></dd></>}
+        </dl>
+      </Fragment>
+      <div class="prose reveal" style="--i:3"><Content /></div>
+    </Marginalia>
+  </article>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: 2.5rem; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 4rem); max-width: 20ch; margin-top: 1rem; }
+  .lede { max-width: 52ch; font-size: 1.2em; color: var(--ink-soft); }
+  dl { margin: 0; }
+  dt { color: var(--accent); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.1em; margin-top: 0.9rem; }
+  dt:first-child { margin-top: 0; }
+  dd { margin: 0.15rem 0 0; }
+
+  .prose :global(h2) { margin-top: 2.2em; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+  .prose :global(h2:first-child) { margin-top: 0; }
+  .prose :global(strong) { font-weight: 650; }
+  .prose :global(code) { font-family: var(--font-mono); font-size: 0.82em; background: var(--paper-2); padding: 0.12em 0.4em; border-radius: 3px; }
+</style>

@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit', timeZone: 'UTC' });
+---
+
+<BaseLayout title="Notes" description="Experiments and write-ups on quantization, interpretability, and building AI systems.">
+  <section class="wrap head">
+    <p class="label reveal" style="--i:0">Experiment log</p>
+    <h1 class="reveal" style="--i:1">Notes</h1>
+    <p class="lede reveal" style="--i:2">Write-ups from the bench: what I tried, what broke, and what it taught me.</p>
+  </section>
+
+  <section class="wrap" aria-label="Posts">
+    <ol class="ledger">
+      {posts.map((p, i) => (
+        <li class="reveal" style={`--i:${i + 3}`}>
+          <a class="row" href={`/blog/${p.id}/`}>
+            <time class="label" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+            <span class="body">
+              <span class="title">{p.data.title}</span>
+              <span class="desc">{p.data.description}</span>
+            </span>
+            <span class="tags label">{p.data.tags.join(' · ')}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
+  .lede { max-width: 46ch; font-size: 1.2em; color: var(--ink-soft); }
+  .ledger { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .ledger li { border-bottom: 1px solid var(--rule); }
+  .row {
+    display: grid; gap: 0.5rem 2rem; padding-block: 1.6rem; background-image: none;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 60rem) { .row { grid-template-columns: 8rem minmax(0, 1fr) 14rem; align-items: baseline; } }
+  .body { display: flex; flex-direction: column; gap: 0.4rem; }
+  .title {
+    font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.9rem); line-height: 1.15;
+    font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 1; transition: color 0.2s, transform 0.3s;
+  }
+  .desc { color: var(--ink-soft); max-width: 60ch; font-size: 0.95em; }
+  .tags { text-align: left; }
+  @media (min-width: 60rem) { .tags { text-align: right; } }
+  .row:hover .title { color: var(--accent); transform: translateX(6px); }
+  @media (prefers-reduced-motion: reduce) { .row:hover .title { transform: none; } }
+</style>

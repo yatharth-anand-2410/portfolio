@@ -1,0 +1,25 @@
+---
+// Notebook-style layout: a side-note column on wide screens, collapsing inline on mobile.
+// Usage: <Marginalia><span slot="note">Fig. 1 — caption</span> body content…</Marginalia>
+---
+
+<div class="notebook">
+  <aside class="margin" aria-label="Margin note"><slot name="note" /></aside>
+  <div class="main"><slot /></div>
+</div>
+
+<style>
+  .margin {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--accent);
+    padding-top: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  @media (min-width: 60rem) {
+    .margin { margin-bottom: 0; align-self: start; position: sticky; top: 1.5rem; }
+  }
+</style>

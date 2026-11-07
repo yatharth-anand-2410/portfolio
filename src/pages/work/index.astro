@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const items = (await getCollection('work', (w) => !w.data.draft)).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Work" description="Products and systems I have designed and built, with the reasoning behind them.">
+  <section class="wrap head">
+    <p class="label reveal" style="--i:0">Selected work</p>
+    <h1 class="reveal" style="--i:1">Work</h1>
+    <p class="lede reveal" style="--i:2">Things I built end to end, and why I built them the way I did.</p>
+  </section>
+
+  <section class="wrap" aria-label="Case studies">
+    <ol class="ledger">
+      {items.map((w, i) => (
+        <li class="reveal" style={`--i:${i + 3}`}>
+          <a class="row" href={`/work/${w.id}/`}>
+            <span class="num label">{String(i + 1).padStart(2, '0')}</span>
+            <span class="body">
+              <span class="title">{w.data.title}</span>
+              <span class="desc">{w.data.summary}</span>
+            </span>
+            <span class="meta label">{w.data.kind}<br />{w.data.status}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
+  .lede { max-width: 46ch; font-size: 1.2em; color: var(--ink-soft); }
+  .ledger { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .ledger li { border-bottom: 1px solid var(--rule); }
+  .row { display: grid; gap: 0.5rem 2rem; padding-block: 1.9rem; background-image: none; grid-template-columns: 1fr; }
+  @media (min-width: 60rem) { .row { grid-template-columns: 4rem minmax(0, 1fr) 16rem; align-items: baseline; } }
+  .num { color: var(--accent); }
+  .body { display: flex; flex-direction: column; gap: 0.5rem; }
+  .title {
+    font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1;
+    font-variation-settings: 'opsz' 96, 'SOFT' 50, 'WONK' 1; transition: color 0.2s, transform 0.3s;
+  }
+  .desc { color: var(--ink-soft); max-width: 58ch; }
+  @media (min-width: 60rem) { .meta { text-align: right; } }
+  .row:hover .title { color: var(--accent); transform: translateX(6px); }
+  @media (prefers-reduced-motion: reduce) { .row:hover .title { transform: none; } }
+</style>

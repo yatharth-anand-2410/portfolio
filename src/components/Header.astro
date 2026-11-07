@@ -1,0 +1,65 @@
+---
+import { UPWORK_URL } from '../data/site';
+const path = Astro.url.pathname;
+const links = [
+  { href: '/work', label: 'Work' },
+  { href: '/services', label: 'Services' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/blog', label: 'Notes' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="Yatharth Anand, home">Y. Anand<span aria-hidden="true">.</span></a>
+    <nav aria-label="Primary">
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={path.startsWith(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="actions">
+      <a class="hire mono" href={UPWORK_URL} rel="noopener">Hire on Upwork</a>
+      <button class="theme mono" id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
+        <span class="t-light">Light</span><span class="t-dark">Dark</span>
+      </button>
+    </div>
+  </div>
+  <hr class="rule" />
+</header>
+
+<script>
+  const btn = document.getElementById('theme-toggle');
+  btn?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+  });
+</script>
+
+<style>
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.1rem; flex-wrap: wrap; }
+  .brand {
+    font-family: var(--font-display); font-size: 1.35rem; letter-spacing: -0.01em;
+    font-variation-settings: 'opsz' 72, 'SOFT' 100, 'WONK' 1; background-image: none;
+  }
+  .brand span { color: var(--accent); }
+  nav ul { display: flex; gap: clamp(0.9rem, 2.5vw, 1.8rem); list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+  nav a { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  nav a[aria-current='page'] { color: var(--accent); background-size: 100% 2px; }
+  .actions { display: flex; align-items: center; gap: 0.6rem; }
+  .hire {
+    background-image: none; background: var(--accent); color: var(--paper); padding: 0.4rem 0.85rem;
+    border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+  }
+  .hire:hover { color: var(--paper); filter: brightness(0.9); }
+  .theme {
+    background: none; border: 1px solid var(--rule); color: var(--ink); padding: 0.35rem 0.7rem;
+    cursor: pointer; border-radius: 999px;
+  }
+  .theme:hover { border-color: var(--accent); color: var(--accent); }
+  :global(:root:not([data-theme='dark'])) .t-dark, :global(:root[data-theme='dark']) .t-light { display: none; }
+</style>

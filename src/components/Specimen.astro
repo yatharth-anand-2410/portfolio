@@ -1,0 +1,36 @@
+---
+// A "lab reading": big serif figure with a mono label and a tick ruler.
+interface Props { value: string; label: string; note?: string; index?: number }
+const { value, label, note, index = 0 } = Astro.props;
+---
+
+<figure class="specimen reveal" style={`--i:${index}`}>
+  <div class="ticks" aria-hidden="true"></div>
+  <p class="value">{value}</p>
+  <figcaption>
+    <span class="label">{label}</span>
+    {note && <span class="note">{note}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .specimen { margin: 0; }
+  .ticks {
+    height: 10px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 8px);
+    opacity: 0.55;
+    margin-bottom: 0.9rem;
+    mask-image: linear-gradient(90deg, #000 70%, transparent);
+  }
+  .value {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 5vw, 4rem);
+    line-height: 1;
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+    font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 1;
+    font-weight: 380;
+  }
+  figcaption { display: flex; flex-direction: column; gap: 0.25rem; }
+  .note { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.45; }
+</style>

@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { UPWORK_URL } from '../data/site';
+---
+
+<BaseLayout title="Contact" description="Get in touch with Yatharth Anand.">
+  <section class="wrap head">
+    <p class="label reveal" style="--i:0">Contact</p>
+    <h1 class="reveal" style="--i:1">Say hello.</h1>
+    <p class="lede reveal" style="--i:2">
+      To hire me for a project, message me on Upwork. For anything else, such as questions about
+      AI systems, retrieval, or agents, email or LinkedIn is fine.
+    </p>
+  </section>
+
+  <section class="wrap">
+    <ul class="channels">
+      <li class="reveal" style="--i:3">
+        <span class="label">Hire me</span>
+        <a href={UPWORK_URL} rel="noopener">Message me on Upwork</a>
+      </li>
+      <li class="reveal" style="--i:3">
+        <span class="label">Email</span>
+        <a href="mailto:yatharthanand2410@gmail.com">yatharthanand2410@gmail.com</a>
+      </li>
+      <li class="reveal" style="--i:4">
+        <span class="label">LinkedIn</span>
+        <a href="https://linkedin.com/in/yatharth-anand-6945aa202" rel="me">yatharth-anand-6945aa202</a>
+      </li>
+      <li class="reveal" style="--i:5">
+        <span class="label">GitHub</span>
+        <a href="https://github.com/yatharth-anand-2410" rel="me">yatharth-anand-2410</a>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
+  .lede { max-width: 48ch; font-size: 1.2em; color: var(--ink-soft); }
+  .channels { list-style: none; margin: 1rem 0 0; padding: 0; border-top: 1px solid var(--rule); }
+  .channels li {
+    display: grid; gap: 0.3rem 2rem; padding-block: 1.5rem; border-bottom: 1px solid var(--rule);
+    grid-template-columns: 1fr; align-items: baseline;
+  }
+  @media (min-width: 40rem) { .channels li { grid-template-columns: 9rem 1fr; } }
+  .channels a { font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 2rem); font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 1; word-break: break-word; }
+</style>

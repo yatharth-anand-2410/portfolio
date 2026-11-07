@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { offers, UPWORK_URL } from '../data/site';
+---
+
+<BaseLayout title="Services" description="Hire a senior ML engineer for WhatsApp and voice AI agents, document Q&A chatbots, and LLM cost audits.">
+  <section class="wrap head">
+    <p class="label reveal" style="--i:0">Services</p>
+    <h1 class="reveal" style="--i:1">What I can build for you.</h1>
+    <p class="lede reveal" style="--i:2">
+      Three kinds of work I take on, each scoped before it starts. Everything is arranged
+      through Upwork, so you get payment protection and a clear record of the work.
+    </p>
+    <p class="reveal" style="--i:3"><a class="btn" href={UPWORK_URL} rel="noopener">Hire me on Upwork</a></p>
+  </section>
+
+  <section class="wrap" aria-label="Offers">
+    <ol class="offers">
+      {offers.map((o, i) => (
+        <li class="offer reveal" style={`--i:${i + 4}`}>
+          <span class="num label">{String(i + 1).padStart(2, '0')}</span>
+          <div class="main">
+            <h2>{o.name}</h2>
+            <p class="tag">{o.tagline}</p>
+            <p class="who"><span class="label">Good fit if</span><br />{o.forWho}</p>
+          </div>
+          <div class="get">
+            <p class="label">You get</p>
+            <ul>{o.youGet.map((g) => <li>{g}</li>)}</ul>
+            <p class="proof"><a href={o.proof.href}>{o.proof.label} →</a></p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="wrap how">
+    <h2 class="label sect">How it works</h2>
+    <ol class="steps">
+      <li><strong>Message me on Upwork</strong> with what you want to achieve.</li>
+      <li><strong>I reply with a scoped plan</strong> and a fixed price for a first milestone.</li>
+      <li><strong>You review working software</strong> at each milestone, not a promise.</li>
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
+  .lede { max-width: 52ch; font-size: 1.2em; color: var(--ink-soft); }
+  .btn {
+    display: inline-block; margin-top: 0.5rem; padding: 0.8rem 1.4rem; background: var(--accent); color: var(--paper);
+    font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+    background-image: none; border-radius: 2px;
+  }
+  .btn:hover { color: var(--paper); filter: brightness(0.9); }
+  .offers { list-style: none; margin: 1.5rem 0 0; padding: 0; border-top: 1px solid var(--rule); }
+  .offer { display: grid; gap: 1.2rem 2.5rem; padding-block: 2.2rem; border-bottom: 1px solid var(--rule); grid-template-columns: 1fr; }
+  @media (min-width: 60rem) { .offer { grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1fr); } }
+  .num { color: var(--accent); }
+  .main h2 { margin-bottom: 0.4rem; }
+  .tag { font-size: 1.1em; }
+  .who { color: var(--ink-soft); font-size: 0.95em; }
+  .get ul { margin: 0.4rem 0 1rem; padding-left: 1.1em; color: var(--ink-soft); font-size: 0.95em; }
+  .get li { margin-bottom: 0.4rem; }
+  .proof { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .how { padding-top: 2rem; }
+  .sect { border-top: 1px solid var(--accent); padding-top: 0.7rem; margin-bottom: 1.2rem; font-weight: 400; }
+  .steps { padding-left: 1.2em; max-width: 56ch; }
+  .steps li { margin-bottom: 0.7rem; }
+</style>
