@@ -1,80 +1,43 @@
 ---
-import { MAILTO } from '../data/site';
 const links = [
-  { href: '/#production', label: 'Work' },
+  { href: '/#work', label: 'Work' },
   { href: '/#projects', label: 'Projects' },
-  { href: '/#lab', label: 'Lab' },
-  { href: '/#writing', label: 'Writing' },
+  { href: '/lab/', label: 'Lab' },
+  { href: '/blog/', label: 'Writing' },
   { href: '/#about', label: 'About' },
 ];
 ---
 
-<header class="site-header">
-  <div class="wrap bar">
-    <a class="brand" href="/" aria-label="Yatharth Anand, home">Y. Anand<span aria-hidden="true">.</span></a>
-    <nav aria-label="Primary">
-      <ul>
-        {links.map((l) => (
-          <li><a href={l.href} data-spy={l.href.slice(2)}>{l.label}</a></li>
-        ))}
-      </ul>
-    </nav>
-    <div class="actions">
-      <a class="hire mono" href={MAILTO}>Email me</a>
-      <button class="theme mono" id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
-        <span class="t-light">Light</span><span class="t-dark">Dark</span>
-      </button>
-    </div>
-  </div>
-  <hr class="rule" />
+<header class="site-header wrap">
+  <a class="brand" href="/">Yatharth Anand</a>
+  <nav aria-label="Primary">
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    <button id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
+      <span class="t-light">Dark</span><span class="t-dark">Light</span>
+    </button>
+  </nav>
 </header>
 
 <script>
-  const btn = document.getElementById('theme-toggle');
-  btn?.addEventListener('click', () => {
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem('theme', next); } catch {}
   });
-
-  // Scrollspy: home page only.
-  if (location.pathname === '/') {
-    const links = [...document.querySelectorAll<HTMLAnchorElement>('nav a[data-spy]')];
-    const map = new Map(links.map((a) => [a.dataset.spy, a]));
-    const set = (id: string | null) => links.forEach((a) => {
-      if (a.dataset.spy === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-    });
-    const visible = new Set<string>();
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
-      // Pick the first section (in nav order) that is in the active band.
-      const active = links.map((a) => a.dataset.spy!).find((id) => visible.has(id)) ?? null;
-      set(active);
-    }, { rootMargin: '-15% 0px -70% 0px' });
-    map.forEach((_, id) => { const el = id && document.getElementById(id); if (el) io.observe(el); });
-  }
 </script>
 
 <style>
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.1rem; flex-wrap: wrap; }
-  .brand {
-    font-family: var(--font-display); font-size: 1.35rem; letter-spacing: -0.01em;
-    font-variation-settings: 'opsz' 72, 'SOFT' 100, 'WONK' 1; background-image: none;
+  .site-header {
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;
+    gap: 0.5rem 1.5rem; padding-top: 1.75rem; padding-bottom: 1rem;
   }
-  .brand span { color: var(--accent); }
-  nav ul { display: flex; gap: clamp(0.9rem, 2.5vw, 1.8rem); list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
-  nav a { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  nav a[aria-current='true'] { color: var(--accent); background-size: 100% 2px; }
-  .actions { display: flex; align-items: center; gap: 0.6rem; }
-  .hire {
-    background-image: none; background: var(--accent); color: var(--paper); padding: 0.4rem 0.85rem;
-    border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+  .brand { font-weight: 650; color: var(--ink); text-decoration: none; }
+  nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-size: 0.95rem; }
+  nav a { color: var(--ink-soft); text-decoration: none; }
+  nav a:hover { color: var(--ink); text-decoration: underline; }
+  button {
+    font: inherit; font-size: 0.95rem; color: var(--ink-soft); background: none; border: 0; padding: 0; cursor: pointer;
   }
-  .hire:hover { color: var(--paper); filter: brightness(0.9); }
-  .theme {
-    background: none; border: 1px solid var(--rule); color: var(--ink); padding: 0.35rem 0.7rem;
-    cursor: pointer; border-radius: 999px;
-  }
-  .theme:hover { border-color: var(--accent); color: var(--accent); }
+  button:hover { color: var(--ink); text-decoration: underline; }
   :global(:root:not([data-theme='dark'])) .t-dark, :global(:root[data-theme='dark']) .t-light { display: none; }
 </style>

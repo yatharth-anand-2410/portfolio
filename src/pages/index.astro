@@ -1,198 +1,146 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Specimen from '../components/Specimen.astro';
 import { getCollection } from 'astro:content';
-import { MAILTO, EMAIL, GITHUB_URL, LINKEDIN_URL } from '../data/site';
+import { EMAIL, GITHUB_URL, LINKEDIN_URL } from '../data/site';
 import { lab } from '../data/lab';
 import { research, contributions } from '../data/projects';
 
 const work = (await getCollection('work', (w) => !w.data.draft)).sort((a, b) => a.data.order - b.data.order);
 const field = (await getCollection('field', (f) => !f.data.draft)).sort((a, b) => a.data.order - b.data.order);
-const posts = (await getCollection('blog', (p) => !p.data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const demos = [...lab].sort((a, b) => a.order - b.order);
 const fmt = (d: Date) => d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit', timeZone: 'UTC' });
 const gh = GITHUB_URL + '/';
-const what = [
-  ['Voice & chat agents', 'Outbound and inbound calls, WhatsApp, and chat. Memory, routing, qualification, and callbacks.', null],
-  ['Custom AI systems', 'Retrieval, agentic workflows, structured extraction, and the evaluation that tells you they work.', null],
-  ['Cost & reliability audits', 'Find where LLM spend goes, cut it, and prove quality holds.', '/audit'],
-] as const;
+const demoPage: Record<string, string> = { leadforge: '/demos/leadforge/' };
 ---
 
 <BaseLayout title="Home">
-  <section id="top" class="hero wrap">
-    <p class="label reveal" style="--i:0">Yatharth Anand — Senior ML Engineer · Bangalore</p>
-    <h1 class="reveal" style="--i:1">
-      I build voice and WhatsApp AI agents that <em>hold up</em> on real calls.
-    </h1>
-    <p class="lede reveal" style="--i:2">
-      I also build custom AI systems (retrieval, agentic workflows, extraction), and run audits that
-      make LLM features cheaper and more reliable.
-    </p>
-    <p class="cta reveal" style="--i:3">
-      <a href={MAILTO}>Email me</a>
-      <a href="#production">See production work</a>
-    </p>
-  </section>
-
-  <section class="wrap readings" aria-label="Selected measurements">
-    <Specimen index={4} value="−50%" label="LLM inference cost" note="Prompt caching and context optimization across multi-channel agents." />
-    <Specimen index={5} value="Millions" label="Records, multi-tenant" note="Python, PostgreSQL, AWS Lambda/ECS and vector search." />
-    <Specimen index={6} value="1 of 5" label="Founding AI platform engineers" note="Core AI platform team at a B2B sales-AI startup since 2024." />
-  </section>
-
-  <section id="what" class="wrap block" aria-labelledby="what-h">
-    <h2 id="what-h" class="label sect">What I do</h2>
-    <ul class="what">
-      {what.map(([t, d, href]) => (
-        <li>
-          <h3>{t}</h3>
-          <p>{d}{href && <> <a href={href}>How the audit works</a></>}</p>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="production" class="wrap block" aria-labelledby="prod-h">
-    <h2 id="prod-h" class="label sect">Production work</h2>
-    <p class="intro">Field notes from production systems at a B2B sales-AI startup. Anonymized; numbers are ones I've shared publicly.</p>
-    {field.length === 0 ? (
-      <p class="intro">Field notes are on the way.</p>
-    ) : (
-      <ol class="ledger">
-        {field.map((f, i) => (
-          <li>
-            <a class="row" href={`/field/${f.id}/`}>
-              <span class="num label">{String(i + 1).padStart(2, '0')}</span>
-              <span class="body">
-                <span class="title">{f.data.title}</span>
-                <span class="desc">{f.data.summary}</span>
-                {f.data.metric && <span class="label metric">{f.data.metric}</span>}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ol>
-    )}
-  </section>
-
-  <section id="projects" class="wrap block" aria-labelledby="proj-h">
-    <h2 id="proj-h" class="label sect">Projects</h2>
-    <ol class="ledger">
-      {work.map((w, i) => (
-        <li>
-          <a class="row" href={`/work/${w.id}/`}>
-            <span class="num label">{String(i + 1).padStart(2, '0')}</span>
-            <span class="body"><span class="title">{w.data.title}</span><span class="desc">{w.data.summary}</span></span>
-          </a>
-          {(w.data.liveUrl || w.data.repoUrl) && (
-            <p class="links label">
-              {w.data.liveUrl && <a href={w.data.liveUrl}>Live</a>}
-              {w.data.repoUrl && <a href={w.data.repoUrl}>Repo</a>}
-            </p>
-          )}
-        </li>
-      ))}
-    </ol>
-  </section>
-
-  <section id="lab" class="wrap block" aria-labelledby="lab-h">
-    <h2 id="lab-h" class="label sect">Lab</h2>
-    <p class="intro">Interactive demos from experiments where I take models apart.</p>
-    <ol class="ledger">
-      {demos.map((d, i) => (
-        <li>
-          <a class="row" href={`/lab/${d.slug}/`}>
-            <span class="num label">{String(i + 1).padStart(2, '0')}</span>
-            <span class="body"><span class="title">{d.title}</span><span class="desc">{d.summary}</span></span>
-          </a>
-        </li>
-      ))}
-    </ol>
-    <h3 class="label sub">Open source</h3>
-    <ul class="plain">
-      {contributions.map((c) => (
-        <li><a href={c.url}>{c.repo}</a>: {c.title}. {c.note}</li>
-      ))}
-    </ul>
-    <h3 class="label sub">Research repos</h3>
-    <ul class="plain">
-      {research.map((p) => (
-        <li><a href={gh + p.repo}>{p.title}</a> <span class="faint">· {p.tags.join(', ')}</span></li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="writing" class="wrap block" aria-labelledby="writing-h">
-    <h2 id="writing-h" class="label sect">Writing</h2>
-    <ul class="plain posts">
-      {posts.map((p) => (
-        <li><time class="label" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time> <a href={`/blog/${p.id}/`}>{p.data.title}</a></li>
-      ))}
-    </ul>
-    <p><a href="/blog/">All notes</a></p>
-  </section>
-
-  <section id="about" class="wrap block" aria-labelledby="about-h">
-    <h2 id="about-h" class="label sect">About</h2>
-    <div class="prose">
+  <article class="wrap home">
+    <section class="intro">
       <p>
-        I'm a senior ML engineer, one of the first five on the core AI platform team at a B2B sales-AI
-        startup. I led the architecture of multi-channel agents (orchestration, memory, routing, workflow
-        execution) and cut LLM inference cost by about 50% with prompt caching and context optimization.
+        Hi, I'm Yatharth. I'm a senior machine learning engineer in Bangalore. I build voice and WhatsApp
+        AI agents that hold up on real calls, and the systems around them: retrieval, agentic workflows,
+        memory and structured extraction.
       </p>
       <p>
-        I also built the sales-analytics and multi-tenant infrastructure underneath, on Python,
-        PostgreSQL, AWS and vector search, handling millions of records.
+        I'm one of the first five engineers on the core AI platform team at a B2B sales-AI startup, where
+        I led the multi-channel agents and cut LLM inference cost by about 50%. On the side I take models
+        apart to see how they work.
+      </p>
+      <p>I take on freelance work in three areas:</p>
+      <ul>
+        <li><strong>Voice and chat agents</strong> for calls, WhatsApp and chat, with memory, routing, qualification and callbacks.</li>
+        <li><strong>Custom AI systems:</strong> retrieval, agentic workflows, extraction, and the evaluation that shows they work.</li>
+        <li><strong>Cost and reliability audits</strong> for LLM features already in production (<a href="/audit/">how the audit works</a>).</li>
+      </ul>
+      <p>
+        Email <a href={`mailto:${EMAIL}`}>{EMAIL}</a>, or find me on <a href={LINKEDIN_URL} rel="me">LinkedIn</a>{" "}and{" "}<a href={GITHUB_URL} rel="me">GitHub</a>.
+      </p>
+    </section>
+
+    <section id="work">
+      <h2>Production work</h2>
+      <p class="note">Field notes from systems I run at work. Anonymized; numbers are ones I've shared publicly.</p>
+      <ul class="list">
+        {field.map((f) => (
+          <li>
+            <a href={`/field/${f.id}/`}>{f.data.title}</a>
+            <span class="meta">{f.data.metric}</span>
+            <p>{f.data.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <ul class="list">
+        {work.map((w) => (
+          <li>
+            <a href={`/work/${w.id}/`}>{w.data.title.split(':')[0]}</a>
+            <span class="meta">
+              {[
+                w.data.video && 'video',
+                w.data.liveUrl && <a href={w.data.liveUrl}>live</a>,
+                demoPage[w.id] && <a href={demoPage[w.id]}>replay demo</a>,
+                w.data.repoUrl && <a href={w.data.repoUrl}>code</a>,
+              ].filter(Boolean).map((x, i) => <>{i > 0 && ' · '}{x}</>)}
+            </span>
+            <p>{w.data.summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="lab">
+      <h2>Lab</h2>
+      <p class="note">Interactive demos built from my own experiments, using the saved results.</p>
+      <ul class="list">
+        {demos.map((d) => (
+          <li>
+            <a href={`/lab/${d.slug}/`}>{d.title}</a>
+            <p>{d.summary}</p>
+          </li>
+        ))}
+      </ul>
+      <h3>Open source</h3>
+      <ul class="plain">
+        {contributions.map((c) => (
+          <li><a href={c.url}>{c.repo}</a>: {c.title} (merged)</li>
+        ))}
+      </ul>
+      <h3>Research repos</h3>
+      <ul class="plain">
+        {research.map((p) => (
+          <li><a href={gh + p.repo}>{p.title}</a> <span class="meta">{p.tags.join(', ')}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="writing">
+      <h2>Writing</h2>
+      <ul class="dated">
+        {posts.map((p) => (
+          <li><time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time> <a href={`/blog/${p.id}/`}>{p.data.title}</a></li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="about">
+      <h2>About</h2>
+      <p>
+        At work I architected multi-channel agents across email and WhatsApp (orchestration, memory,
+        routing, workflow execution), sales-intelligence analytics (pitch evaluation, intent detection,
+        structured extraction with human review), and the multi-tenant infrastructure underneath on
+        Python, PostgreSQL, AWS and vector search, handling millions of records.
       </p>
       <p>
         Before that I was a data science intern at Farmart, forecasting commodity prices (5% MAPE on
-        30-day predictions). I studied computer science at IIIT Nagpur (2020 to 2024).
+        30-day predictions) and building sentiment pipelines for agricultural news. I studied computer
+        science at IIIT Nagpur (2020 to 2024).
       </p>
-      <p><a href={GITHUB_URL} rel="me">GitHub</a> · <a href={LINKEDIN_URL} rel="me">LinkedIn</a></p>
-    </div>
-  </section>
-
-  <section id="contact" class="wrap block" aria-labelledby="contact-h">
-    <h2 id="contact-h" class="label sect">Contact</h2>
-    <p>Running AI in production and want a second look, or just have a question? Write to me.</p>
-    <p><a href={MAILTO}>{EMAIL}</a> · <a href={LINKEDIN_URL} rel="me">LinkedIn</a></p>
-  </section>
+    </section>
+  </article>
 </BaseLayout>
 
-<style is:global>
-  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-</style>
 <style>
-  section[id] { scroll-margin-top: 1.5rem; }
-  .hero { padding-top: clamp(3rem, 9vw, 7rem); padding-bottom: clamp(2rem, 6vw, 4rem); }
-  .hero h1 { max-width: 18ch; margin-block: 1rem 1.5rem; }
-  .hero h1 em { color: var(--accent); font-style: italic; font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1; }
-  .lede { max-width: 46ch; font-size: 1.25em; color: var(--ink-soft); }
-  .cta { display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem; margin-top: 2rem; font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  .readings { display: grid; gap: clamp(1.5rem, 4vw, 3rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); padding-block: clamp(2rem, 5vw, 4rem); }
-  .block { padding-top: clamp(2.5rem, 6vw, 4.5rem); }
-  .sect { border-top: 1px solid var(--accent); padding-top: 0.7rem; margin-bottom: 1rem; font-weight: 400; }
-  .intro { max-width: 60ch; color: var(--ink-soft); }
-  .what { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem 2.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
-  .what h3 { margin-bottom: 0.4rem; }
-  .what p { color: var(--ink-soft); margin: 0; }
-  .ledger { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
-  .ledger li { border-bottom: 1px solid var(--rule); }
-  .row { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding-block: 1.5rem; background-image: none; }
-  .num { color: var(--accent); }
-  .body { display: flex; flex-direction: column; gap: 0.4rem; }
-  .title { font-family: var(--font-display); font-size: clamp(1.3rem, 2.4vw, 1.8rem); line-height: 1.15; font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 1; transition: color 0.2s; }
-  .desc { color: var(--ink-soft); max-width: 62ch; font-size: 0.95em; }
-  .metric { color: var(--accent); }
-  .row:hover .title { color: var(--accent); }
-  .links { display: flex; gap: 1.25rem; margin: -0.6rem 0 1.2rem 4rem; }
-  .sub { margin: 2rem 0 0.6rem; font-weight: 400; }
-  .plain { list-style: none; margin: 0 0 1rem; padding: 0; max-width: 62ch; }
-  .plain li { margin-bottom: 0.5rem; color: var(--ink-soft); }
-  .faint { font-size: 0.9em; }
-  .posts time { margin-right: 0.75rem; }
-  .prose { max-width: 62ch; }
+  .home { padding-top: 1rem; }
+  section { margin-bottom: 2.5rem; }
+  section + section { padding-top: 0.25rem; }
+  h2 { margin-bottom: 0.6rem; }
+  h3 { margin-top: 1.5rem; }
+  .note { color: var(--ink-soft); font-size: 0.95rem; }
+  .intro ul { padding-left: 1.2rem; }
+  .intro li { margin-bottom: 0.35rem; }
+  .list { list-style: none; padding: 0; margin: 0; }
+  .list li { margin-bottom: 1.1rem; }
+  .list p { margin: 0.15rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .meta { color: var(--ink-soft); font-size: 0.85rem; margin-left: 0.4rem; }
+  .meta a { color: var(--ink-soft); }
+  .plain { padding-left: 1.2rem; }
+  .plain li { margin-bottom: 0.35rem; }
+  .dated { list-style: none; padding: 0; margin: 0; }
+  .dated li { margin-bottom: 0.45rem; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; }
+  .dated time { color: var(--ink-soft); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  @media (max-width: 30rem) { .dated li { grid-template-columns: 1fr; gap: 0; } }
 </style>

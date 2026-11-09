@@ -74,23 +74,23 @@ const send = [
 </BaseLayout>
 
 <style>
-  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
-  .head h1 { font-size: clamp(2.2rem, 5.5vw, 4.2rem); max-width: 20ch; margin-block: 1rem 1.2rem; }
-  .lede { max-width: 54ch; font-size: 1.2em; color: var(--ink-soft); }
+  .head { padding-top: 1rem; padding-bottom: 2rem; }
+  .head h1 { font-size: 1.75rem; max-width: 20ch; margin-block: 1rem 1.2rem; }
+  .lede { max-width: 54ch; font-size: 1.05rem; color: var(--ink-soft); }
   .cta { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin-top: 1.8rem; }
   .btn {
     display: inline-block; padding: 0.8rem 1.4rem; background: var(--accent); color: var(--paper);
-    font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+    font-family: var(--font-mono); font-size: 0.78rem;
     background-image: none; border-radius: 2px;
   }
   .btn:hover { color: var(--paper); filter: brightness(0.9); }
   .grid { display: grid; gap: 2rem 3rem; grid-template-columns: 1fr; padding-top: 2rem; }
   @media (min-width: 52rem) { .grid { grid-template-columns: 1fr 1fr; } }
-  .sect { border-top: 1px solid var(--accent); padding-top: 0.7rem; margin: 0 0 1rem; font-weight: 400; }
+  .sect { border-top: 0; padding-top: 0.7rem; margin: 0 0 1rem; font-weight: 400; }
   .col ul { padding-left: 1.1em; margin: 0; color: var(--ink-soft); }
   .col li { margin-bottom: 0.6rem; }
   .note { color: var(--ink-soft); font-size: 0.92em; margin-top: 1rem; }
-  .rows { display: grid; gap: 2.2rem; padding-top: clamp(2rem, 5vw, 3.5rem); max-width: 52rem; margin-inline: 0; }
+  .rows { display: grid; gap: 2.2rem; padding-top: 1rem; max-width: 52rem; margin-inline: 0; }
   .row-item ol { padding-left: 1.2em; margin: 0; }
   .row-item li { margin-bottom: 0.6rem; }
 </style>
