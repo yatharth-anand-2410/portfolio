@@ -8,6 +8,8 @@ repoUrl: "https://github.com/yatharth-anand-2410/leadforge"
 order: 3
 ---
 
+You can step through a real recorded run, with contacts masked, in the [LeadForge replay](/demos/leadforge/).
+
 ## The problem
 
 Building a lead list by hand means searching maps, opening websites, hunting for contact pages, and checking whether an email address even works. Most of that is mechanical. LeadForge hands the mechanical part to an agent and keeps the judgment, which is deciding what a good lead looks like, with the user.

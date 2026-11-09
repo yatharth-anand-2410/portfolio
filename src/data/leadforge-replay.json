@@ -1,0 +1,432 @@
+{
+ "runs": [
+  {
+   "id": "dental",
+   "title": "Dental clinics in Pune, India",
+   "icp": {
+    "brief": "Dental clinics in Pune, India",
+    "targetLeads": 8
+   },
+   "outcome": "completed after about 17 minutes of recorded time with 5 of 8 target leads. The agent stopped before reaching the target.",
+   "steps": [
+    {
+     "t": 0,
+     "stage": "queued",
+     "message": "Recording starts: job status queued, stage queued, 0 leads saved",
+     "counts": {
+      "leads": 0
+     }
+    },
+    {
+     "t": 221,
+     "stage": "discovery",
+     "message": "Saved lead 1 of 8: Advanced Dental Care Center (no score recorded)",
+     "counts": {
+      "leads": 1
+     },
+     "leadIndex": 0
+    },
+    {
+     "t": 316,
+     "stage": "discovery",
+     "message": "Saved lead 2 of 8: Dental clinic (name withheld) (score 95)",
+     "counts": {
+      "leads": 2
+     },
+     "leadIndex": 1
+    },
+    {
+     "t": 332,
+     "stage": "discovery",
+     "message": "Saved lead 3 of 8: Dental clinic (name withheld) (no score recorded)",
+     "counts": {
+      "leads": 3
+     },
+     "leadIndex": 2
+    },
+    {
+     "t": 350,
+     "stage": "discovery",
+     "message": "Saved lead 4 of 8: Varad Dental Clinic & Implant Centre (no score recorded)",
+     "counts": {
+      "leads": 4
+     },
+     "leadIndex": 3
+    },
+    {
+     "t": 389,
+     "stage": "discovery",
+     "message": "Saved lead 5 of 8: Dental clinic (name withheld) (no score recorded)",
+     "counts": {
+      "leads": 5
+     },
+     "leadIndex": 4
+    },
+    {
+     "t": 1022,
+     "stage": "done",
+     "message": "Job status: completed, stage: done, 5 leads saved",
+     "counts": {
+      "leads": 5
+     }
+    }
+   ],
+   "leads": [
+    {
+     "name": "Advanced Dental Care Center",
+     "category": "dental",
+     "locality": "Magarpatta City, India",
+     "domain": null,
+     "score": 0.0,
+     "email": null,
+     "phone": "+91 ******** 04",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": false
+      },
+      {
+       "label": "Email found",
+       "ok": false
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      },
+      {
+       "label": "Phone format valid",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Dental clinic (name withheld)",
+     "category": "dental",
+     "locality": "Pune, India",
+     "domain": "dixitdentalcare.com",
+     "score": 95.0,
+     "email": null,
+     "phone": "+91 ******** 66",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": true
+      },
+      {
+       "label": "Email found",
+       "ok": false
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      },
+      {
+       "label": "Phone format valid",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Dental clinic (name withheld)",
+     "category": "dental",
+     "locality": "Pune, India",
+     "domain": null,
+     "score": 0.0,
+     "email": null,
+     "phone": "+91 ******** 43",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": false
+      },
+      {
+       "label": "Email found",
+       "ok": false
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      },
+      {
+       "label": "Phone format valid",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Varad Dental Clinic & Implant Centre",
+     "category": "dental",
+     "locality": "Pune, India",
+     "domain": null,
+     "score": 0.0,
+     "email": null,
+     "phone": "******** 01",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": false
+      },
+      {
+       "label": "Email found",
+       "ok": false
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      },
+      {
+       "label": "Phone format valid",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Dental clinic (name withheld)",
+     "category": "dental",
+     "locality": "Pune, India",
+     "domain": null,
+     "score": 0.0,
+     "email": "***@***",
+     "phone": null,
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": false
+      },
+      {
+       "label": "Email found",
+       "ok": true
+      },
+      {
+       "label": "Email domain has MX records",
+       "ok": true
+      },
+      {
+       "label": "Phone found",
+       "ok": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "coffee",
+   "title": "Specialty coffee roasters in Bengaluru",
+   "icp": {
+    "brief": "Specialty coffee roasters in Bengaluru",
+    "targetLeads": 8
+   },
+   "outcome": "the first lead was saved after about 11 minutes, and 5 of 8 target leads were saved by the time I stopped recording at about 20 minutes. The job was still running.",
+   "steps": [
+    {
+     "t": 0,
+     "stage": "discovery",
+     "message": "Recording starts: job status running, stage discovery, 0 leads saved",
+     "counts": {
+      "leads": 0
+     }
+    },
+    {
+     "t": 669,
+     "stage": "discovery",
+     "message": "Saved lead 1 of 8: Third Wave Coffee Roasters (score 100)",
+     "counts": {
+      "leads": 1
+     },
+     "leadIndex": 0
+    },
+    {
+     "t": 675,
+     "stage": "discovery",
+     "message": "Saved lead 2 of 8: Blue Tokai Coffee Roasters (score 100)",
+     "counts": {
+      "leads": 2
+     },
+     "leadIndex": 1
+    },
+    {
+     "t": 790,
+     "stage": "discovery",
+     "message": "Saved lead 3 of 8: Araku Coffee (score 95)",
+     "counts": {
+      "leads": 3
+     },
+     "leadIndex": 2
+    },
+    {
+     "t": 792,
+     "stage": "discovery",
+     "message": "Saved lead 4 of 8: Sleepy Owl Coffee (score 95)",
+     "counts": {
+      "leads": 4
+     },
+     "leadIndex": 3
+    },
+    {
+     "t": 794,
+     "stage": "discovery",
+     "message": "Saved lead 5 of 8: Cothas Coffee (score 90)",
+     "counts": {
+      "leads": 5
+     },
+     "leadIndex": 4
+    },
+    {
+     "t": 1202,
+     "stage": "discovery",
+     "message": "Recording stopped here; job status still: running, 5 leads saved",
+     "counts": {
+      "leads": 5
+     }
+    }
+   ],
+   "leads": [
+    {
+     "name": "Third Wave Coffee Roasters",
+     "category": "coffee",
+     "locality": "Bengaluru, India",
+     "domain": "thirdwavecoffeeroasters.com",
+     "score": 100.0,
+     "email": "o***@thirdwavecoffee.in",
+     "phone": "+91 ******** 11",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": true
+      },
+      {
+       "label": "Email found",
+       "ok": true
+      },
+      {
+       "label": "Email domain has MX records",
+       "ok": true
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Blue Tokai Coffee Roasters",
+     "category": "coffee",
+     "locality": "Bengaluru, India",
+     "domain": "bluetokaicoffee.com",
+     "score": 100.0,
+     "email": "g***@bluetokaicoffee.com",
+     "phone": "+91 ******** 77",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": true
+      },
+      {
+       "label": "Email found",
+       "ok": true
+      },
+      {
+       "label": "Email domain has MX records",
+       "ok": true
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Araku Coffee",
+     "category": "coffee",
+     "locality": "Bengaluru, India",
+     "domain": "arakucoffee.in",
+     "score": 95.0,
+     "email": "c***@arakuoriginals.com",
+     "phone": "+91 ******** 00",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": true
+      },
+      {
+       "label": "Email found",
+       "ok": true
+      },
+      {
+       "label": "Email domain has MX records",
+       "ok": true
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Sleepy Owl Coffee",
+     "category": "coffee",
+     "locality": "Bengaluru, India",
+     "domain": "sleepyowl.co",
+     "score": 95.0,
+     "email": "h***@sleepyowl.co",
+     "phone": "+91 ******** 00",
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": true
+      },
+      {
+       "label": "Email found",
+       "ok": true
+      },
+      {
+       "label": "Email domain has MX records",
+       "ok": true
+      },
+      {
+       "label": "Phone found",
+       "ok": true
+      }
+     ]
+    },
+    {
+     "name": "Cothas Coffee",
+     "category": "coffee",
+     "locality": "Bengaluru, India",
+     "domain": "cothas.com",
+     "score": 90.0,
+     "email": "c***@cothas.com",
+     "phone": null,
+     "role": null,
+     "badges": [
+      {
+       "label": "Website found",
+       "ok": true
+      },
+      {
+       "label": "Email found",
+       "ok": true
+      },
+      {
+       "label": "Email domain has MX records",
+       "ok": true
+      },
+      {
+       "label": "Phone found",
+       "ok": false
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LeadForgeReplay from '../../components/LeadForgeReplay.astro';
+const repo = 'https://github.com/yatharth-anand-2410/leadforge';
+---
+
+<BaseLayout title="LeadForge replay" description="Step through a real recorded LeadForge discovery run: the agent's progress log and the shortlist it saved, with contacts masked.">
+  <article class="wrap page">
+    <header class="head">
+      <p class="label reveal" style="--i:0"><a href="/work/leadforge/">← LeadForge case study</a></p>
+      <h1 class="reveal" style="--i:1">LeadForge, replayed</h1>
+      <p class="lede reveal" style="--i:2">
+        LeadForge is a background agent that finds real businesses, crawls their sites, and verifies the contact details it saves.
+        Pick one of two runs I recorded and step through its progress log as the shortlist fills in.
+      </p>
+    </header>
+
+    <section class="reveal" style="--i:3">
+      <LeadForgeReplay />
+    </section>
+
+    <section class="prose">
+      <h2>What you're seeing</h2>
+      <p>
+        This is a real recorded run, replayed from saved data. There is no live backend behind this page. The leads are real businesses, so every email and phone number is masked, people's names are dropped, and only the website domain and locality are kept.
+      </p>
+      <p>
+        The progress log is what the LeadForge API exposes while a job runs: its status, its stage, and how many leads are saved. I polled it about every two seconds and kept every change. Replay speed only changes how fast the saved clock runs.
+      </p>
+      <p>
+        Source: <a href={repo}>LeadForge on GitHub</a>. Back to the <a href="/work/leadforge/">case study</a>.
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: 2rem; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 4rem); max-width: 20ch; margin-top: 1rem; }
+  .lede { max-width: var(--measure); color: var(--ink-soft); }
+  .page { padding-bottom: 5rem; }
+  .prose { max-width: var(--measure); margin-top: 4rem; }
+  .prose h2 { margin-top: 0; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+</style>
