@@ -10,7 +10,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, summary, kind, status, stack, liveUrl, repoUrl } = entry.data;
+const { title, summary, kind, status, stack, liveUrl, repoUrl, video, poster } = entry.data;
 ---
 
 <BaseLayout title={title} description={summary}>
@@ -31,6 +31,12 @@ const { title, summary, kind, status, stack, liveUrl, repoUrl } = entry.data;
           {repoUrl && <><dt>Source</dt><dd><a href={repoUrl}>GitHub repository</a></dd></>}
         </dl>
       </Fragment>
+      {video && (
+        <figure class="demo reveal" style="--i:3">
+          <video src={video} poster={poster} controls muted playsinline preload="none" width="1920" height="1080"></video>
+          <figcaption class="label">Product walkthrough · demo account with sample games</figcaption>
+        </figure>
+      )}
       <div class="prose reveal" style="--i:3"><Content /></div>
     </Marginalia>
   </article>
@@ -49,4 +55,7 @@ const { title, summary, kind, status, stack, liveUrl, repoUrl } = entry.data;
   .prose :global(h2:first-child) { margin-top: 0; }
   .prose :global(strong) { font-weight: 650; }
   .prose :global(code) { font-family: var(--font-mono); font-size: 0.82em; background: var(--paper-2); padding: 0.12em 0.4em; border-radius: 3px; }
+  .demo { margin: 0 0 2.5rem; }
+  .demo video { width: 100%; height: auto; display: block; border: 1px solid var(--rule); background: #000; }
+  .demo figcaption { margin-top: 0.6rem; }
 </style>

@@ -6,6 +6,8 @@ status: "Live, with a free tier and a paid plan"
 stack: ["FastAPI", "Stockfish", "LLM (Gemini)", "Server-sent events", "TypeScript", "Supabase", "Render"]
 liveUrl: "https://www.chessmasterss.in"
 repoUrl: "https://github.com/yatharth-anand-2410/chess-masters"
+video: "/videos/chessmasters-demo.mp4"
+poster: "/videos/chessmasters-demo.jpg"
 order: 1
 ---
 

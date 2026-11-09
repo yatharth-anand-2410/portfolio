@@ -23,6 +23,8 @@ const work = defineCollection({
     stack: z.array(z.string()),
     liveUrl: z.url().optional(),
     repoUrl: z.url().optional(),
+    video: z.string().optional(), // path under /public, e.g. /videos/x.mp4
+    poster: z.string().optional(),
     order: z.number().default(99),
     draft: z.boolean().default(false),
   }),
