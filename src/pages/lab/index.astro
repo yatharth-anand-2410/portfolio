@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { lab } from '../../data/lab';
+const demos = [...lab].sort((a, b) => a.order - b.order);
+---
+
+<BaseLayout title="Lab" description="Interactive demos from my research on decoding, interpretability, quantization and weight corruption.">
+  <section class="wrap head">
+    <p class="label reveal" style="--i:0"><a href="/#lab">← Home</a> · Lab</p>
+    <h1 class="reveal" style="--i:1">Lab</h1>
+    <p class="lede reveal" style="--i:2">Small interactive demos from experiments where I take models apart.</p>
+  </section>
+  <section class="wrap" aria-label="Demos">
+    <ol class="ledger">
+      {demos.map((d, i) => (
+        <li class="reveal" style={`--i:${i + 3}`}>
+          <a class="row" href={`/lab/${d.slug}/`}>
+            <span class="num label">{String(i + 1).padStart(2, '0')}</span>
+            <span class="body"><span class="title">{d.title}</span><span class="desc">{d.summary}</span></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
+  .lede { max-width: 46ch; font-size: 1.2em; color: var(--ink-soft); }
+  .ledger { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .ledger li { border-bottom: 1px solid var(--rule); }
+  .row { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding-block: 1.5rem; background-image: none; }
+  .num { color: var(--accent); }
+  .body { display: flex; flex-direction: column; gap: 0.4rem; }
+  .title { font-family: var(--font-display); font-size: clamp(1.3rem, 2.4vw, 1.8rem); line-height: 1.15; font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 1; transition: color 0.2s; }
+  .desc { color: var(--ink-soft); max-width: 62ch; font-size: 0.95em; }
+  .row:hover .title { color: var(--accent); }
+</style>

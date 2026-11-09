@@ -1,0 +1,99 @@
+{
+ "prompt": "What is 2+2?",
+ "orig": [
+  1351726744,
+  1180922772,
+  658999370,
+  2203367800,
+  1717855591,
+  716830345,
+  2186301553,
+  356746582,
+  1857407783,
+  1819494979
+ ],
+ "saved1000004": [
+  1350726740,
+  1179922768,
+  657999366,
+  2202367796,
+  1716855587,
+  715830341,
+  2185301549,
+  355746578,
+  1856407779,
+  1818494975
+ ],
+ "stops": [
+  {
+   "shift": 0,
+   "output": "The answer to 2+2 is 4",
+   "status": "Healthy",
+   "tier": "ok",
+   "source": "Blog post table (output quoted there)"
+  },
+  {
+   "shift": 1,
+   "output": null,
+   "status": "Healthy",
+   "tier": "ok",
+   "source": "Notebook 06 status note: robust to single-digit shifts"
+  },
+  {
+   "shift": 1000000,
+   "output": "The answer to 2+2 is 4",
+   "status": "Healthy",
+   "tier": "ok",
+   "source": "Blog post table (output quoted there)"
+  },
+  {
+   "shift": 1000001,
+   "output": null,
+   "status": "Wobbling",
+   "tier": "warn",
+   "source": "Notebook 06 status note: response slightly different but still coherent"
+  },
+  {
+   "shift": 1000003,
+   "output": "The answer is 4 obceLIKELYHonestly...",
+   "status": "Dying mid-sentence",
+   "tier": "bad",
+   "source": "Blog post table (output quoted there)"
+  },
+  {
+   "shift": 1000004,
+   "output": "The answer to -…and…and//{{—aigtizmet",
+   "status": "Collapsing",
+   "tier": "bad",
+   "source": "Saved cell output in notebook 05 (verbatim, 10 tokens max)"
+  },
+  {
+   "shift": 1000005,
+   "output": "The answer permalinkizmet...",
+   "status": "Catastrophic failure",
+   "tier": "dead",
+   "source": "Blog post table (output quoted there)"
+  },
+  {
+   "shift": 1000010,
+   "output": null,
+   "status": "Instant gibberish",
+   "tier": "dead",
+   "source": "Notebook 06 status note: no coherent output from the start"
+  },
+  {
+   "shift": 10000000,
+   "output": null,
+   "status": "Gibberish",
+   "tier": "dead",
+   "source": "Notebook 06 status note: random Chinese, code tokens and multilingual gibberish"
+  },
+  {
+   "shift": 100000000,
+   "output": null,
+   "status": "Stuck in a loop",
+   "tier": "dead",
+   "source": "Notebook 06 status note: repeats one broken token"
+  }
+ ]
+}

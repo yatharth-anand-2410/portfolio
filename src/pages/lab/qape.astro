@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QapeDemo from '../../components/lab/QapeDemo.astro';
+const repo = 'https://github.com/yatharth-anand-2410/quantized-slm-prompt-optimization';
+---
+
+<BaseLayout title="Prompt evolution for quantized SLMs" description="Compare baseline and evolved prompts from QAPE, a genetic-algorithm prompt optimizer, on 4-bit small language models.">
+  <article class="wrap page">
+    <header class="head">
+      <p class="label reveal" style="--i:0"><a href="/#lab">← Lab</a></p>
+      <h1 class="reveal" style="--i:1">Prompt evolution for quantized SLMs</h1>
+      <p class="lede reveal" style="--i:2">
+        QAPE (Quantization-Aware Prompt Evolution) is a genetic-algorithm prompt optimizer. It mutates a prompt, scores each variant on the quantized model itself, and keeps the fittest, with no retraining and no weight changes.
+        Here is what it found on 4-bit models, taken from the saved run files in the repository.
+      </p>
+    </header>
+
+    <section class="reveal" style="--i:3">
+      <QapeDemo />
+    </section>
+
+    <section class="prose">
+      <h2>What to try</h2>
+      <ul>
+        <li>Select Qwen-2.5-0.5B on Financial NER. The baseline scores 4.89% and the evolved prompt 29.90%, the +25.02 point result. Drag the generation slider to watch fitness climb from 5.00 to 51.90 as the prompt is rewritten.</li>
+        <li>Switch to GSM8K or PII. Several cells show no gain, and Llama on PII drops 2.86 points. The method does not help every task, and the page shows those runs as saved.</li>
+        <li>In the matrix, compare the two Llama rows for SVAMP. Each evolved prompt scores 80.00% on the precision it was evolved on and 73.33% on the other. On Financial NER, the prompt evolved on Q4 also beats the baseline on FP16 (67.88% against 60.85%).</li>
+      </ul>
+
+      <h2>Why this matters in production</h2>
+      <p>
+        Quantized small models are cheap to serve, but 4-bit weights cost accuracy. If a rewritten prompt wins part of that back, you keep the cheaper model and skip a fine-tuning run. Lower inference cost is the point, and a prompt is also a file you can version, review and roll back.
+      </p>
+
+      <h2>Limits of this data</h2>
+      <ul>
+        <li>Test sets are small (30 held-out items per task), so on the accuracy tasks one item is 3.33 points. Treat single-digit gains as suggestive.</li>
+        <li>The matrix comes from a separate evaluation run from the optimizer's test scores, so its baseline numbers differ slightly (for example Llama SVAMP Q4 baseline is 70.00% in both, but GSM8K is 63.33% there and 76.67% above).</li>
+        <li>The matrix covers Llama-3.2-3B only. The FP16 optimizer runs in the repository saved zero or inconsistent test scores, so they are not shown as bars.</li>
+        <li>Generation scores are validation fitness as saved in each run's history, not test results.</li>
+      </ul>
+
+      <p>Source, run files and paper draft: <a href={repo}>quantized-slm-prompt-optimization on GitHub</a>.</p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: 2rem; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 4rem); max-width: 20ch; margin-top: 1rem; }
+  .lede { max-width: var(--measure); color: var(--ink-soft); }
+  .page { padding-bottom: 5rem; }
+  .prose { max-width: var(--measure); margin-top: 4rem; }
+  .prose h2 { margin-top: 2em; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+  .prose ul { padding-left: 1.2em; margin: 0 0 1.1em; }
+  .prose li { margin-bottom: 0.5em; }
+</style>

@@ -1,13 +1,11 @@
 ---
 import { MAILTO } from '../data/site';
-const path = Astro.url.pathname;
 const links = [
-  { href: '/work', label: 'Work' },
-  { href: '/services', label: 'Services' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/blog', label: 'Notes' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/#production', label: 'Work' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#lab', label: 'Lab' },
+  { href: '/#writing', label: 'Writing' },
+  { href: '/#about', label: 'About' },
 ];
 ---
 
@@ -17,12 +15,12 @@ const links = [
     <nav aria-label="Primary">
       <ul>
         {links.map((l) => (
-          <li><a href={l.href} aria-current={path.startsWith(l.href) ? 'page' : undefined}>{l.label}</a></li>
+          <li><a href={l.href} data-spy={l.href.slice(2)}>{l.label}</a></li>
         ))}
       </ul>
     </nav>
     <div class="actions">
-      <a class="hire mono" href={MAILTO}>Request an audit</a>
+      <a class="hire mono" href={MAILTO}>Email me</a>
       <button class="theme mono" id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
         <span class="t-light">Light</span><span class="t-dark">Dark</span>
       </button>
@@ -38,6 +36,23 @@ const links = [
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem('theme', next); } catch {}
   });
+
+  // Scrollspy: home page only.
+  if (location.pathname === '/') {
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('nav a[data-spy]')];
+    const map = new Map(links.map((a) => [a.dataset.spy, a]));
+    const set = (id: string | null) => links.forEach((a) => {
+      if (a.dataset.spy === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+    const visible = new Set<string>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+      // Pick the first section (in nav order) that is in the active band.
+      const active = links.map((a) => a.dataset.spy!).find((id) => visible.has(id)) ?? null;
+      set(active);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    map.forEach((_, id) => { const el = id && document.getElementById(id); if (el) io.observe(el); });
+  }
 </script>
 
 <style>
@@ -49,7 +64,7 @@ const links = [
   .brand span { color: var(--accent); }
   nav ul { display: flex; gap: clamp(0.9rem, 2.5vw, 1.8rem); list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
   nav a { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  nav a[aria-current='page'] { color: var(--accent); background-size: 100% 2px; }
+  nav a[aria-current='true'] { color: var(--accent); background-size: 100% 2px; }
   .actions { display: flex; align-items: center; gap: 0.6rem; }
   .hire {
     background-image: none; background: var(--accent); color: var(--paper); padding: 0.4rem 0.85rem;

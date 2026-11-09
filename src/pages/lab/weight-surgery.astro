@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WeightSurgeryDemo from '../../components/lab/WeightSurgeryDemo.astro';
+const repo = 'https://github.com/yatharth-anand-2410/llama3-mlx-research-lab';
+---
+
+<BaseLayout title="Weight surgery" description="Subtract an increasing shift from the packed 4-bit lm_head weights of Llama 3 8B and read how its answer to 2+2 collapses.">
+  <article class="wrap page">
+    <header class="head">
+      <p class="label reveal" style="--i:0"><a href="/#lab">← Lab</a></p>
+      <h1 class="reveal" style="--i:1">Weight surgery</h1>
+      <p class="lede reveal" style="--i:2">
+        I subtracted a growing integer from the packed 4-bit <code>lm_head</code> weights of Llama 3 8B Instruct on Apple MLX and asked it "What is 2+2?".
+        The answer survives a shift of one million, then falls apart within a few units.
+      </p>
+    </header>
+
+    <section class="reveal" style="--i:3">
+      <WeightSurgeryDemo />
+    </section>
+
+    <section class="prose">
+      <h2>What to try</h2>
+      <ul>
+        <li>Step from 1,000,000 to 1,000,003. The output goes from the correct answer to a correct start followed by junk, after a change of three.</li>
+        <li>Continue to 1,000,004 and 1,000,005 and watch the tail of the sentence shrink.</li>
+        <li>Compare the bit table at 1 and at 1,000,000. Small shifts touch the lowest nibble of each container, and a million touches the lowest five.</li>
+      </ul>
+
+      <h2>Why this matters in production</h2>
+      <p>
+        Quantized weights are packed integers, not floats, so a bit flip or a memory fault does not behave like gentle noise. Knowing that output holds up to a sharp threshold and then fails abruptly argues for output validation and health checks on any model served from compressed weights, since cheap 4-bit serving gives you less warning before it breaks.
+      </p>
+
+      <h2>Limits of this data</h2>
+      <ul>
+        <li>The repository holds no saved perplexity or accuracy for these runs, and no figures. The only saved model text is one notebook cell output (shift 1,000,004). Four more outputs are quoted in the write-up, and the rest of the shifts have status notes in notebook 06 without output text.</li>
+        <li>The chart therefore plots a computed quantity (changed nibbles among the first ten containers), not model quality.</li>
+        <li>One prompt, one model, ten generated tokens at most. Notebook 05 used a system prompt; the write-up does not say which setup produced its quoted outputs.</li>
+      </ul>
+
+      <p>
+        Related: <a href="/blog/manual-weight-surgery/">Manual weight surgery: locating the LLM's brain and voice</a>, which zeroes the embedding table and the head instead.
+        Notebooks and code: <a href={repo}>llama3-mlx-research-lab on GitHub</a>.
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: 2rem; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 4rem); max-width: 20ch; margin-top: 1rem; }
+  .lede { max-width: var(--measure); color: var(--ink-soft); }
+  .page { padding-bottom: 5rem; }
+  .prose { max-width: var(--measure); margin-top: 4rem; }
+  .prose h2 { margin-top: 2em; font-size: clamp(1.5rem, 2.6vw, 2rem); }
+  .prose ul { padding-left: 1.2em; margin: 0 0 1.1em; }
+  .prose li { margin-bottom: 0.5em; }
+</style>

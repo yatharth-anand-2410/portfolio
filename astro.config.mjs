@@ -7,4 +7,10 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://yatharth-anand.vercel.app',
   integrations: [mdx(), sitemap()],
+  redirects: {
+    '/services': '/audit',
+    '/about': '/#about',
+    '/contact': '/#contact',
+    '/projects': '/#lab',
+  },
 });

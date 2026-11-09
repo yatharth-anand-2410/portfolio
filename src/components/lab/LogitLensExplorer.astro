@@ -1,0 +1,150 @@
+---
+import data from '../../data/lab/logit-lens.json';
+---
+<div class="lab-ll">
+<div class="ll">
+  <script type="application/json" id="ll-data" set:html={JSON.stringify(data.prompts)}></script>
+
+  <fieldset class="prompts">
+    <legend>Prompt</legend>
+    {data.prompts.map((p, i) => (
+      <label class="opt">
+        <input type="radio" name="ll-prompt" value={p.id} checked={i === 0} />
+        <span><b>{p.label}</b><code>{p.text}</code></span>
+      </label>
+    ))}
+  </fieldset>
+
+  <div class="ctl">
+    <label for="ll-layer">Layer <output id="ll-layer-o">0</output> of 0 to 31</label>
+    <input id="ll-layer" type="range" min="0" max="31" step="1" value="0" />
+  </div>
+
+  <div class="strip" id="ll-strip" aria-hidden="true"></div>
+  <p class="legend label">
+    <span class="k emer"></span> emergence layer
+    <span class="k crit"></span> removing this layer alone breaks the answer
+    <span class="k void"></span> inside the longest removable window
+    <span class="k after"></span> after emergence
+  </p>
+
+  <p class="read" id="ll-read" role="status" aria-live="polite"></p>
+  <dl class="facts" id="ll-facts"></dl>
+  <div id="ll-final"></div>
+
+  <p class="caveat">
+    The repo's per-layer probability curves exist only as plots, not as saved numbers, so this page does not draw a curve and
+    does not show decoded tokens for intermediate layers. What is shown are the numbers the notebooks printed or the README
+    reports: the emergence layer, the layers whose single removal breaks the answer, the longest block of layers that can be
+    removed while the answer survives, and the final-layer decode. Layer numbers follow the repo (the removal tests are
+    0-indexed; the emergence layers come from the README's trajectory plots, whose axis may be offset by one).
+  </p>
+</div>
+</div>
+
+<script>
+  type P = {
+    id: string; label: string; text: string; target: string; emergence: number; profile: string;
+    critical: number[]; void: [number, number];
+    ablation: { layer: number; baseline: number; attn_zeroed: number; mlp_zeroed: number } | null;
+    final: [string, number][] | null;
+  };
+  const prompts = JSON.parse(document.getElementById('ll-data')!.textContent!) as P[];
+  const $ = (id: string) => document.getElementById(id) as HTMLElement;
+  const slider = $('ll-layer') as HTMLInputElement;
+  const strip = $('ll-strip'), read = $('ll-read'), facts = $('ll-facts'), fin = $('ll-final');
+  const show = (s: string) => s.replace(/^ /, '␣');
+  const cur = () => {
+    const v = (document.querySelector('input[name="ll-prompt"]:checked') as HTMLInputElement).value;
+    return prompts.find((p) => p.id === v)!;
+  };
+
+  function render() {
+    const p = cur(), L = +slider.value;
+    $('ll-layer-o').textContent = String(L);
+    strip.innerHTML = Array.from({ length: 32 }, (_, i) => {
+      const c = ['cell'];
+      if (i >= p.emergence) c.push('after');
+      if (i >= p.void[0] && i <= p.void[1]) c.push('void');
+      if (p.critical.includes(i)) c.push('crit');
+      if (i === p.emergence) c.push('emer');
+      if (i === L) c.push('cur');
+      return `<span class="${c.join(' ')}"><i>${i % 5 === 0 || i === 31 ? i : ''}</i></span>`;
+    }).join('');
+
+    const rel = L < p.emergence ? 'before' : L === p.emergence ? 'at' : 'after';
+    const critical = p.critical.includes(L);
+    const inVoid = L >= p.void[0] && L <= p.void[1];
+    read.innerHTML = `Layer ${L} is <strong>${rel === 'at' ? 'the emergence layer' : rel + ' the emergence layer'}</strong> (layer ${p.emergence}) for the target <code>${show(p.target)}</code>.`;
+
+    const row = (k: string, v: string) => `<div><dt>${k}</dt><dd>${v}</dd></div>`;
+    facts.innerHTML =
+      row('Profile (README)', p.profile) +
+      row('Removing layer ' + L + ' alone', critical ? 'Breaks the prediction' : 'Prediction survives') +
+      row('Longest removable block', `Layers ${p.void[0]} to ${p.void[1]} (${p.void[1] - p.void[0] + 1} of 32)${inVoid ? '. This layer is inside it.' : '. This layer is outside it.'}`) +
+      row('All critical layers', p.critical.join(', '));
+
+    let html = '';
+    if (p.ablation) {
+      const a = p.ablation;
+      html += `<h3>Where it is stored: layer ${a.layer}</h3><div class="tw"><table><thead><tr><th>Probability of ${show(p.target)}</th><th>Value</th></tr></thead><tbody>
+        <tr><td>Baseline</td><td>${a.baseline.toFixed(4)}</td></tr>
+        <tr><td>Attention output zeroed at layer ${a.layer}</td><td>${a.attn_zeroed.toFixed(4)}</td></tr>
+        <tr><td>MLP output zeroed at layer ${a.layer}</td><td>${a.mlp_zeroed.toFixed(4)}</td></tr></tbody></table></div>`;
+    }
+    if (p.final) {
+      html += `<h3>Final-layer decode</h3><ol class="fin">` + p.final.map(([t, v]) =>
+        `<li><code>${show(t)}</code><span class="tr"><span class="f" style="width:${v * 100}%"></span></span><span>${(v * 100).toFixed(1)}%</span></li>`).join('') + '</ol>';
+    }
+    fin.innerHTML = html;
+  }
+  slider.addEventListener('input', render);
+  document.querySelectorAll('input[name="ll-prompt"]').forEach((e) => e.addEventListener('change', render));
+  render();
+</script>
+
+<style is:global>
+.lab-ll {
+  .ll { border: 1px solid var(--rule); background: var(--paper-2); padding: clamp(1rem, 3vw, 1.75rem); margin: 0 0 2rem; }
+  fieldset { border: 0; padding: 0; margin: 0 0 1.25rem; display: grid; gap: 0.6rem; }
+  legend, .ctl label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.5rem; padding: 0; }
+  .opt { display: flex; gap: 0.7rem; align-items: flex-start; cursor: pointer; font-size: 0.95rem; }
+  .opt input { margin-top: 0.35rem; accent-color: var(--accent); }
+  .opt span { display: grid; gap: 0.15rem; }
+  .opt code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-soft); overflow-wrap: anywhere; }
+  .ctl label { display: flex; justify-content: space-between; gap: 0.5rem; }
+  output { color: var(--ink); }
+  input[type='range'] { width: 100%; accent-color: var(--accent); min-height: 1.75rem; }
+  .strip { display: grid; grid-template-columns: repeat(32, 1fr); gap: 2px; margin-top: 0.75rem; }
+  .cell { position: relative; height: 2.1rem; background: var(--paper); border: 1px solid var(--rule); }
+  .cell.after { background: color-mix(in srgb, var(--ink-blue) 28%, var(--paper)); }
+  .cell.void { background-image: repeating-linear-gradient(45deg, transparent 0 3px, var(--rule) 3px 4px); }
+  .cell.crit::after { content: ''; position: absolute; left: 50%; top: 4px; width: 6px; height: 6px; margin-left: -3px; background: var(--ink); border-radius: 50%; }
+  .cell.emer { border: 2px solid var(--accent); }
+  .cell.cur { outline: 2px solid var(--ink); outline-offset: 1px; z-index: 1; }
+  .cell i { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font: normal 0.6rem var(--font-mono); color: var(--ink-soft); padding-top: 2px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; align-items: center; margin: 1.6rem 0 0; line-height: 1.4; }
+  .k { display: inline-block; width: 0.9rem; height: 0.8rem; border: 1px solid var(--rule); margin-right: -0.55rem; background: var(--paper); }
+  .k.emer { border: 2px solid var(--accent); }
+  .k.crit { background: radial-gradient(circle, var(--ink) 30%, transparent 35%), var(--paper); }
+  .k.void { background-image: repeating-linear-gradient(45deg, transparent 0 3px, var(--rule) 3px 4px); }
+  .k.after { background: color-mix(in srgb, var(--ink-blue) 28%, var(--paper)); }
+  .read { margin: 1.25rem 0 0.75rem; }
+  code { font-family: var(--font-mono); font-size: 0.82em; }
+  .facts { margin: 0; display: grid; gap: 0; }
+  .facts > div { display: grid; grid-template-columns: 11rem 1fr; gap: 0.75rem; padding: 0.45rem 0; border-bottom: 1px solid var(--rule); font-size: 0.9rem; }
+  dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); padding-top: 0.2rem; }
+  dd { margin: 0; }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  .tw { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.5rem 0.8rem 0.5rem 0; border-bottom: 1px solid var(--rule); }
+  th { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .fin { list-style: none; margin: 0; padding: 0; }
+  .fin li { display: grid; grid-template-columns: 5.5rem 1fr 3.5rem; gap: 0.6rem; align-items: center; padding: 0.2rem 0; font-size: 0.85rem; }
+  .tr { height: 0.9rem; background: var(--paper); border: 1px solid var(--rule); }
+  .f { display: block; height: 100%; background: var(--ink-blue); }
+  .caveat { font-size: 0.82rem; color: var(--ink-soft); margin: 1.5rem 0 0; }
+  @media (max-width: 30rem) { .facts > div { grid-template-columns: 1fr; gap: 0; } .cell i { font-size: 0.5rem; } }
+}
+</style>

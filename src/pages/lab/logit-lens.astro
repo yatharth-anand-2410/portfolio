@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LogitLensExplorer from '../../components/lab/LogitLensExplorer.astro';
+const repo = 'https://github.com/yatharth-anand-2410/llm-mechanistic-interpretability';
+---
+
+<BaseLayout title="Logit lens" description="Scrub through the 32 layers of Llama 3 8B and see where each answer emerges, which layers can be removed, and what the final layer decodes.">
+  <article class="wrap">
+    <header class="head">
+      <p class="label reveal" style="--i:0"><a href="/#lab">← Lab</a></p>
+      <h1 class="reveal" style="--i:1">Logit lens</h1>
+      <p class="lede reveal" style="--i:2">The logit lens decodes a layer's hidden state with the model's own output head, to read what it "thinks" mid-way. In Llama 3 8B, the answer appears at a different depth for each kind of question.</p>
+    </header>
+
+    <div class="reveal" style="--i:3"><LogitLensExplorer /></div>
+
+    <div class="cols">
+      <section>
+        <h2>What to try</h2>
+        <ul>
+          <li>Pick factual recall and drag across layer 19. This is the sharp, step-function emergence.</li>
+          <li>Switch to arithmetic and note the longest removable block (layers 3 to 21): 19 of 32 layers can be deleted while the answer survives.</li>
+          <li>Compare critical layers across prompts. Layers 0 and 1 matter for all three; layer 30 only for the factual prompt.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Why this matters in production</h2>
+        <p>If most middle layers are redundant for shallow tasks but the first two and last few are not, then quantization, pruning and layer-skipping risks are not evenly spread. A cost-saving change that is safe on a factual lookup can be the one that breaks a multi-step agent, so it has to be evaluated per task type, not once on an average benchmark.</p>
+      </section>
+    </div>
+
+    <p class="src label">Data: the README tables and saved outputs of 00_model_instrumentation, 01_layerwise_logit_lens and 03_advanced_interpretability_tracks. Code and notebooks: <a href={repo}>llm-mechanistic-interpretability</a>.</p>
+  </article>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: 2rem; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 4rem); margin-top: 1rem; }
+  .lede { max-width: 56ch; font-size: 1.1em; color: var(--ink-soft); }
+  .cols { display: grid; gap: 2rem 3rem; grid-template-columns: minmax(0, 1fr); margin-top: 3rem; }
+  @media (min-width: 56rem) { .cols { grid-template-columns: 1fr 1fr; } }
+  .cols h2 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
+  ul { padding-left: 1.2em; margin: 0; }
+  li { margin-bottom: 0.6em; }
+  .src { margin: 3rem 0 4rem; text-transform: none; letter-spacing: 0.02em; line-height: 1.8; }
+</style>

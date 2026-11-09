@@ -1,0 +1,94 @@
+{
+ "model": "Meta-Llama-3-8B-Instruct-4bit (MLX), 32 layers",
+ "source": "llm-mechanistic-interpretability README + 01_layerwise_logit_lens.ipynb",
+ "prompts": [
+  {
+   "id": "fact",
+   "label": "Factual recall",
+   "text": "The capital of France is",
+   "target": " Paris",
+   "emergence": 19,
+   "profile": "Step function (sharp)",
+   "critical": [
+    0,
+    1,
+    30
+   ],
+   "void": [
+    5,
+    19
+   ],
+   "ablation": {
+    "layer": 19,
+    "baseline": 0.7739,
+    "attn_zeroed": 0.7739,
+    "mlp_zeroed": 0.6631
+   },
+   "final": [
+    [
+     " Paris",
+     0.9243
+    ],
+    [
+     " the",
+     0.0209
+    ],
+    [
+     " called",
+     0.0206
+    ],
+    [
+     " **",
+     0.0183
+    ],
+    [
+     " not",
+     0.0161
+    ]
+   ]
+  },
+  {
+   "id": "arith",
+   "label": "Arithmetic",
+   "text": "2+2=",
+   "target": " 4",
+   "emergence": 23,
+   "profile": "Oscillatory / syntactic",
+   "critical": [
+    0,
+    1,
+    2
+   ],
+   "void": [
+    3,
+    21
+   ],
+   "ablation": {
+    "layer": 23,
+    "baseline": 0.6433,
+    "attn_zeroed": 0.6289,
+    "mlp_zeroed": 0.5815
+   },
+   "final": null
+  },
+  {
+   "id": "rel",
+   "label": "Relational logic",
+   "text": "The opposite of cold is hot. The opposite of up is down. The opposite of light is",
+   "target": " dark",
+   "emergence": 25,
+   "profile": "Distributed / gradual",
+   "critical": [
+    0,
+    1
+   ],
+   "void": [
+    20,
+    29
+   ],
+   "ablation": null,
+   "final": null
+  }
+ ],
+ "layers": 32
+}

@@ -1,0 +1,182 @@
+---
+import data from '../../data/lab/decoding.json';
+---
+<div class="lab-dp">
+<div class="dp" id="dp">
+  <script type="application/json" id="dp-data" set:html={JSON.stringify(data.distributions)}></script>
+
+  <div class="controls">
+    <div class="ctl wide">
+      <label for="dp-dist">Context (real {data.model} output)</label>
+      <select id="dp-dist">
+        {data.distributions.map((d) => <option value={d.id}>{d.label}</option>)}
+      </select>
+      <p class="hint" id="dp-note"></p>
+    </div>
+    <div class="ctl">
+      <label for="dp-t">Temperature <output id="dp-t-o">1.00</output></label>
+      <input id="dp-t" type="range" min="0.1" max="3" step="0.05" value="1" />
+    </div>
+    <div class="ctl">
+      <label for="dp-k">Top-k <output id="dp-k-o">off</output></label>
+      <input id="dp-k" type="range" min="1" max="10" step="1" value="10" />
+    </div>
+    <div class="ctl">
+      <label for="dp-p">Top-p <output id="dp-p-o">1.00</output></label>
+      <input id="dp-p" type="range" min="0.05" max="1" step="0.01" value="1" />
+    </div>
+    <div class="ctl">
+      <label for="dp-m">Min-p <output id="dp-m-o">0.00</output></label>
+      <input id="dp-m" type="range" min="0" max="0.5" step="0.01" value="0" />
+    </div>
+    <div class="ctl"><button type="button" id="dp-reset">Reset to T=1, no filters</button></div>
+  </div>
+
+  <p class="summary" id="dp-sum" role="status" aria-live="polite"></p>
+
+  <ol class="bars" id="dp-bars" aria-label="Next-token candidates"></ol>
+  <p class="legend label"><span class="sw kept"></span> sampling pool <span class="sw cut"></span> filtered out <span class="sw tick"></span> original probability (T=1, no filters)</p>
+
+  <div class="math" aria-label="Live computation">
+    <h3>The math, live</h3>
+    <ol class="steps" id="dp-math"></ol>
+  </div>
+
+  <p class="caveat">
+    The notebook saved only the top candidates for each context, not the full 151,936-token distribution. The playground treats
+    ln(p) of those candidates as logits and renormalizes over them. So the numbers below are exact for this shortlist, but the
+    long tail a real run would also draw from is not shown, and top-p and entropy are measured over the shortlist.
+  </p>
+</div>
+</div>
+
+<script>
+  const dists = JSON.parse(document.getElementById('dp-data')!.textContent!) as {
+    id: string; label: string; note: string; entropy: number | null; tokens: { t: string; p: number }[];
+  }[];
+  const $ = (id: string) => document.getElementById(id) as HTMLElement;
+  const sel = $('dp-dist') as HTMLSelectElement;
+  const T = $('dp-t') as HTMLInputElement, K = $('dp-k') as HTMLInputElement,
+    P = $('dp-p') as HTMLInputElement, M = $('dp-m') as HTMLInputElement;
+  const bars = $('dp-bars'), math = $('dp-math'), sum = $('dp-sum');
+  const f = (x: number, d = 3) => x.toFixed(d);
+  const show = (s: string) => s.replace(/\n/g, '\\n').replace(/^ /, '␣');
+
+  function cur() { return dists.find((d) => d.id === sel.value)!; }
+
+  function render() {
+    const d = cur();
+    const n = d.tokens.length;
+    K.max = String(n);
+    if (+K.value > n) K.value = String(n);
+    const t = +T.value, k = +K.value, p = +P.value, m = +M.value;
+    ($('dp-t-o')).textContent = f(t, 2);
+    ($('dp-k-o')).textContent = k >= n ? 'off' : String(k);
+    ($('dp-p-o')).textContent = f(p, 2);
+    ($('dp-m-o')).textContent = f(m, 2);
+    $('dp-note').textContent = d.note;
+
+    const base0 = d.tokens.reduce((s, x) => s + x.p, 0);
+    const orig = d.tokens.map((x) => x.p / base0);
+    const logit = d.tokens.map((x) => Math.log(x.p));
+    // 1. temperature
+    const sc = logit.map((z) => z / t);
+    const mx = Math.max(...sc);
+    const ex = sc.map((z) => Math.exp(z - mx));
+    const Z = ex.reduce((a, b) => a + b, 0);
+    const q = ex.map((e) => e / Z);
+
+    const alive = d.tokens.map(() => true);
+    const why: string[] = d.tokens.map(() => '');
+    // 2. top-k (tokens are already sorted desc by p; ordering by q is the same for any T>0)
+    let keptK = n;
+    if (k < n) { for (let i = k; i < n; i++) { alive[i] = false; why[i] = 'top-k'; } keptK = k; }
+    // 3. top-p over renormalized survivors
+    let mass = 0; for (let i = 0; i < n; i++) if (alive[i]) mass += q[i];
+    let cum = 0, cutIdx = -1, cumAtCut = 0;
+    for (let i = 0; i < n; i++) {
+      if (!alive[i]) continue;
+      if (cutIdx >= 0) { alive[i] = false; why[i] = 'top-p'; continue; }
+      cum += q[i] / mass;
+      if (cum >= p - 1e-12) { cutIdx = i; cumAtCut = cum; }
+    }
+    if (cutIdx < 0) { cumAtCut = cum; }
+    let keptP = alive.filter(Boolean).length;
+    // 4. min-p threshold relative to the top survivor
+    let qmax = 0; for (let i = 0; i < n; i++) if (alive[i]) qmax = Math.max(qmax, q[i]);
+    const thr = m * qmax;
+    for (let i = 0; i < n; i++) if (alive[i] && q[i] < thr) { alive[i] = false; why[i] = 'min-p'; }
+    const keptM = alive.filter(Boolean).length;
+    let fin = 0; for (let i = 0; i < n; i++) if (alive[i]) fin += q[i];
+    const r = q.map((x, i) => (alive[i] ? x / fin : 0));
+    const H = -r.reduce((s, x) => s + (x > 0 ? x * Math.log2(x) : 0), 0);
+    const H0 = -orig.reduce((s, x) => s + x * Math.log2(x), 0);
+
+    bars.innerHTML = d.tokens.map((x, i) => {
+      const w = Math.max(r[i] * 100, 0);
+      const pct = alive[i] ? f(r[i] * 100, 1) + '%' : 'cut (' + why[i] + ')';
+      return `<li class="${alive[i] ? 'on' : 'off'}">
+        <span class="tok" title="${show(x.t)}"><code>${show(x.t).replace(/</g, '&lt;')}</code></span>
+        <span class="track" aria-hidden="true"><span class="fill" style="width:${w}%"></span><span class="orig" style="left:${orig[i] * 100}%"></span></span>
+        <span class="val">${pct}<span class="vh"> ${alive[i] ? 'in pool' : ''}</span></span>
+      </li>`;
+    }).join('');
+
+    const top = d.tokens.findIndex((_, i) => alive[i] && r[i] === Math.max(...r));
+    sum.textContent = `Pool: ${keptM} of ${n} candidates. Top token ${show(d.tokens[top].t)} at ${f(r[top] * 100, 1)}% (was ${f(orig[top] * 100, 1)}%). Entropy over the shortlist: ${f(H, 2)} bits (was ${f(H0, 2)}).`;
+
+    const row = (title: string, body: string) => `<li><span class="st">${title}</span><span class="bd">${body}</span></li>`;
+    math.innerHTML =
+      row('Temperature', `q<sub>i</sub> = exp(ln p<sub>i</sub> / ${f(t, 2)}) / Σ. Σ = ${f(Z * Math.exp(mx), 3)}. ${t < 1 ? 'Gaps between scores are stretched, so the top token gains mass.' : t > 1 ? 'Gaps are compressed, so mass moves to the tail.' : 'T=1 returns the original distribution.'}`) +
+      row('Top-k', k < n ? `Keep the ${k} highest scores. ${n - k} cut.` : `Off (k = ${n}, every shown candidate).`) +
+      row('Top-p (nucleus)', p >= 1 ? 'Off (p = 1.00).' : `Add tokens by descending probability until the running total reaches ${f(p, 2)}. It reached ${f(cumAtCut, 3)} after ${keptP} token${keptP === 1 ? '' : 's'}.`) +
+      row('Min-p', m <= 0 ? 'Off (min-p = 0.00).' : `Threshold = ${f(m, 2)} × top probability ${f(qmax, 3)} = ${f(thr, 4)}. Tokens below it are cut (${keptP - keptM} here).`) +
+      row('Renormalize', `Survivors sum to ${f(fin, 3)} and are divided by it, so the pool sums to 1.`);
+  }
+
+  [sel, T, K, P, M].forEach((el) => el.addEventListener('input', render));
+  $('dp-reset').addEventListener('click', () => { T.value = '1'; K.value = K.max; P.value = '1'; M.value = '0'; render(); });
+  render();
+</script>
+
+<style is:global>
+.lab-dp {
+  .dp { border: 1px solid var(--rule); background: var(--paper-2); padding: clamp(1rem, 3vw, 1.75rem); margin: 0 0 2rem; }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1.1rem 1.5rem; }
+  .ctl.wide { grid-column: 1 / -1; }
+  label { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.4rem; gap: 0.5rem; }
+  output { color: var(--ink); }
+  select { width: 100%; font: inherit; font-size: 0.95rem; padding: 0.55rem 0.6rem; background: var(--paper); color: var(--ink); border: 1px solid var(--rule); border-radius: 2px; }
+  input[type='range'] { width: 100%; accent-color: var(--accent); min-height: 1.75rem; }
+  button { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.6rem 0.9rem; background: transparent; color: var(--ink); border: 1px solid var(--ink); border-radius: 2px; cursor: pointer; }
+  button:hover { background: var(--ink); color: var(--paper); }
+  .hint { font-size: 0.85rem; color: var(--ink-soft); margin: 0.5rem 0 0; }
+  .summary { margin: 1.25rem 0 0.75rem; font-size: 0.95rem; min-height: 3em; }
+  .bars { list-style: none; margin: 0; padding: 0; }
+  .bars li { display: grid; grid-template-columns: minmax(4.5rem, 7rem) 1fr minmax(4.5rem, 8.5rem); gap: 0.6rem; align-items: center; padding: 0.22rem 0; font-size: 0.85rem; }
+  .tok code { font-family: var(--font-mono); font-size: 0.78rem; overflow-wrap: anywhere; }
+  .track { position: relative; height: 1.15rem; background: var(--paper); border: 1px solid var(--rule); }
+  .fill { position: absolute; inset: 0 auto 0 0; background: var(--ink-blue); }
+  .orig { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--accent); }
+  .val { font-family: var(--font-mono); font-size: 0.72rem; text-align: right; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  li.off .tok, li.off .val { color: var(--ink-soft); opacity: 0.75; }
+  li.off .track { border-style: dashed; }
+  @media (prefers-reduced-motion: no-preference) { .fill { transition: width 0.15s ease-out; } }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; margin: 0.9rem 0 0; }
+  .sw { display: inline-block; width: 0.9rem; height: 0.7rem; margin-right: -0.5rem; }
+  .sw.kept { background: var(--ink-blue); }
+  .sw.cut { border: 1px dashed var(--ink-soft); }
+  .sw.tick { width: 2px; height: 0.9rem; background: var(--accent); margin-right: -0.5rem; }
+  .math { margin-top: 1.75rem; border-top: 1px solid var(--rule); padding-top: 1.1rem; }
+  .math h3 { font-size: 1.1rem; margin-bottom: 0.6rem; }
+  .steps { list-style: none; padding: 0; margin: 0; }
+  .steps li { display: grid; grid-template-columns: 8.5rem 1fr; gap: 0.75rem; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); font-size: 0.9rem; }
+  .steps .st { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); padding-top: 0.2rem; }
+  .caveat { font-size: 0.82rem; color: var(--ink-soft); margin: 1.25rem 0 0; }
+  @media (max-width: 30rem) {
+    .bars li { grid-template-columns: 4rem 1fr 4.5rem; gap: 0.4rem; }
+    .steps li { grid-template-columns: 1fr; gap: 0; }
+  }
+}
+</style>

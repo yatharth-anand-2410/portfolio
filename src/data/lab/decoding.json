@@ -1,0 +1,388 @@
+{
+ "model": "Qwen/Qwen2.5-0.5B",
+ "source": "01_logits_and_greedy_decoding.ipynb (saved cell outputs)",
+ "distributions": [
+  {
+   "id": "fox",
+   "label": "The quick brown fox jumps over the lazy",
+   "note": "Top 5 of a 151,936-token vocabulary. A confident, near-deterministic prediction.",
+   "entropy": null,
+   "tokens": [
+    {
+     "t": " dog",
+     "p": 0.8789
+    },
+    {
+     "t": "\\n",
+     "p": 0.0171
+    },
+    {
+     "t": " dogs",
+     "p": 0.0118
+    },
+    {
+     "t": " brown",
+     "p": 0.0092
+    },
+    {
+     "t": " (",
+     "p": 0.0086
+    }
+   ]
+  },
+  {
+   "id": "rel1",
+   "label": "The theory of relativity states that",
+   "note": "Step 1 of a greedy run. Top 10 shown. Entropy the notebook reported over the full vocabulary: 5.375 bits.",
+   "entropy": 5.375,
+   "tokens": [
+    {
+     "t": " the",
+     "p": 0.2451
+    },
+    {
+     "t": " time",
+     "p": 0.1021
+    },
+    {
+     "t": " all",
+     "p": 0.0547
+    },
+    {
+     "t": " space",
+     "p": 0.0483
+    },
+    {
+     "t": ",",
+     "p": 0.0427
+    },
+    {
+     "t": " mass",
+     "p": 0.0293
+    },
+    {
+     "t": " a",
+     "p": 0.0228
+    },
+    {
+     "t": " as",
+     "p": 0.0228
+    },
+    {
+     "t": " for",
+     "p": 0.0201
+    },
+    {
+     "t": " in",
+     "p": 0.0178
+    }
+   ]
+  },
+  {
+   "id": "rel2",
+   "label": "The theory of relativity states that the",
+   "note": "Step 2 of a greedy run. Top 10 shown. Entropy the notebook reported over the full vocabulary: 4.5312 bits.",
+   "entropy": 4.5312,
+   "tokens": [
+    {
+     "t": " speed",
+     "p": 0.4316
+    },
+    {
+     "t": " laws",
+     "p": 0.1582
+    },
+    {
+     "t": " faster",
+     "p": 0.0215
+    },
+    {
+     "t": " mass",
+     "p": 0.0189
+    },
+    {
+     "t": " greater",
+     "p": 0.0167
+    },
+    {
+     "t": " fundamental",
+     "p": 0.0148
+    },
+    {
+     "t": " size",
+     "p": 0.0139
+    },
+    {
+     "t": " effects",
+     "p": 0.0101
+    },
+    {
+     "t": " velocity",
+     "p": 0.0095
+    },
+    {
+     "t": " basic",
+     "p": 0.0084
+    }
+   ]
+  },
+  {
+   "id": "rel3",
+   "label": "The theory of relativity states that the speed",
+   "note": "Step 3 of a greedy run. Top 10 shown. Entropy the notebook reported over the full vocabulary: 0.2432 bits.",
+   "entropy": 0.2432,
+   "tokens": [
+    {
+     "t": " of",
+     "p": 0.9766
+    },
+    {
+     "t": " at",
+     "p": 0.0123
+    },
+    {
+     "t": " limit",
+     "p": 0.0027
+    },
+    {
+     "t": " in",
+     "p": 0.0008
+    },
+    {
+     "t": " and",
+     "p": 0.0008
+    },
+    {
+     "t": ",",
+     "p": 0.0006
+    },
+    {
+     "t": " limits",
+     "p": 0.0006
+    },
+    {
+     "t": " (",
+     "p": 0.0005
+    },
+    {
+     "t": " is",
+     "p": 0.0004
+    },
+    {
+     "t": " c",
+     "p": 0.0003
+    }
+   ]
+  },
+  {
+   "id": "rel4",
+   "label": "The theory of relativity states that the speed of",
+   "note": "Step 4 of a greedy run. Top 10 shown. Entropy the notebook reported over the full vocabulary: 1.2266 bits.",
+   "entropy": 1.2266,
+   "tokens": [
+    {
+     "t": " light",
+     "p": 0.8594
+    },
+    {
+     "t": " a",
+     "p": 0.0294
+    },
+    {
+     "t": " any",
+     "p": 0.0294
+    },
+    {
+     "t": " an",
+     "p": 0.0178
+    },
+    {
+     "t": " all",
+     "p": 0.0139
+    },
+    {
+     "t": " information",
+     "p": 0.0051
+    },
+    {
+     "t": " the",
+     "p": 0.0035
+    },
+    {
+     "t": " matter",
+     "p": 0.0031
+    },
+    {
+     "t": " objects",
+     "p": 0.0031
+    },
+    {
+     "t": " sound",
+     "p": 0.0027
+    }
+   ]
+  },
+  {
+   "id": "rel5",
+   "label": "The theory of relativity states that the speed of light",
+   "note": "Step 5 of a greedy run. Top 10 shown. Entropy the notebook reported over the full vocabulary: 2.3438 bits.",
+   "entropy": 2.3438,
+   "tokens": [
+    {
+     "t": " is",
+     "p": 0.4648
+    },
+    {
+     "t": " in",
+     "p": 0.3613
+    },
+    {
+     "t": ",",
+     "p": 0.0491
+    },
+    {
+     "t": " cannot",
+     "p": 0.0159
+    },
+    {
+     "t": " c",
+     "p": 0.014
+    },
+    {
+     "t": " (",
+     "p": 0.014
+    },
+    {
+     "t": " can",
+     "p": 0.0085
+    },
+    {
+     "t": " and",
+     "p": 0.0066
+    },
+    {
+     "t": " does",
+     "p": 0.0059
+    },
+    {
+     "t": " has",
+     "p": 0.0035
+    }
+   ]
+  }
+ ],
+ "loop": {
+  "prompt": "A cat is a cat is a",
+  "steps": [
+   {
+    "step": 1,
+    "entropy": 6.9375,
+    "top": [
+     [
+      " cat",
+      0.2158
+     ],
+     [
+      " dog",
+      0.1226
+     ],
+     [
+      " mouse",
+      0.0659
+     ]
+    ]
+   },
+   {
+    "step": 2,
+    "entropy": 4.0312,
+    "top": [
+     [
+      " is",
+      0.4688
+     ],
+     [
+      ".",
+      0.1523
+     ],
+     [
+      ",",
+      0.0718
+     ]
+    ]
+   },
+   {
+    "step": 3,
+    "entropy": 2.4062,
+    "top": [
+     [
+      " a",
+      0.8047
+     ],
+     [
+      " what",
+      0.0115
+     ],
+     [
+      " the",
+      0.0095
+     ]
+    ]
+   },
+   {
+    "step": 4,
+    "entropy": 2.8906,
+    "top": [
+     [
+      " cat",
+      0.7578
+     ],
+     [
+      " dog",
+      0.0203
+     ],
+     [
+      " very",
+      0.0167
+     ]
+    ]
+   },
+   {
+    "step": 5,
+    "entropy": 3.7344,
+    "top": [
+     [
+      " is",
+      0.4727
+     ],
+     [
+      ".",
+      0.1533
+     ],
+     [
+      "\\n",
+      0.0498
+     ]
+    ]
+   }
+  ],
+  "output": "A cat is a cat is a cat is a cat is a cat is a cat is a cat is a cat is a cat is a ..."
+ },
+ "minp": {
+  "model": "Llama-3-8B-Instruct-4bit (MLX)",
+  "source": "11_min_p_sampling.ipynb",
+  "rows": [
+   {
+    "setting": "Temperature 2.0",
+    "top_p_pool": 128256,
+    "min_p_pool": 38
+   },
+   {
+    "setting": "Weight surgery @ 1,000,003",
+    "top_p_pool": 128256,
+    "min_p_pool": 6
+   }
+  ],
+  "top_p": 0.9,
+  "min_p": 0.05
+ }
+}

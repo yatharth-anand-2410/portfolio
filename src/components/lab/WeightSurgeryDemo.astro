@@ -1,0 +1,146 @@
+---
+import data from '../../data/lab/weight-surgery.json';
+---
+
+<div class="ws" id="ws-root">
+  <script type="application/json" id="ws-data" set:html={JSON.stringify(data)} />
+
+  <label class="range">
+    <span class="label">Shift subtracted from every <code>lm_head</code> weight: <output id="ws-shift"></output></span>
+    <input type="range" id="ws-slider" min="0" max={data.stops.length - 1} step="1" value="0" aria-describedby="ws-stops-note" />
+  </label>
+  <p class="note" id="ws-stops-note">Ten stops, the shifts his notebook tested. Use the arrow keys to step through them.</p>
+
+  <div class="panel" aria-live="polite">
+    <p class="label">Prompt: <span id="ws-prompt"></span></p>
+    <p class="status"><span class="dot" id="ws-dot"></span><strong id="ws-status"></strong></p>
+    <blockquote id="ws-out"></blockquote>
+    <p class="note" id="ws-src"></p>
+  </div>
+
+  <section aria-labelledby="ws-bits-h">
+    <h3 id="ws-bits-h">What the subtraction does to the packed weights</h3>
+    <p class="note">
+      Each 32-bit container holds eight 4-bit weights. These are the first ten containers from the notebook output, shifted by the selected amount (computed here, not saved). Each nibble is shown in hex; changed nibbles are shaded.
+    </p>
+    <div class="tbl-wrap"><table class="bits" id="ws-bits"><thead><tr><th>#</th><th>Before</th><th>After</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" id="ws-check"></p>
+  </section>
+
+  <section aria-labelledby="ws-chart-h">
+    <h3 id="ws-chart-h">Nibbles changed vs shift</h3>
+    <svg id="ws-chart" viewBox="0 0 340 150" role="img" aria-label="Number of changed 4-bit nibbles among the first ten containers at each tested shift" preserveAspectRatio="xMidYMid meet"></svg>
+    <p class="note">This is the only quantity computable from the saved data, and it is not a quality metric. No perplexity or accuracy was recorded in the repository. Bar colour is the status he assigned to that shift.</p>
+  </section>
+</div>
+
+<style>
+  .ws { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+  .ws h3 { margin: 0 0 0.7rem; }
+  .range { display: grid; gap: 0.4rem; max-width: 34rem; }
+  input[type='range'] { width: 100%; min-height: 44px; accent-color: var(--accent); }
+  output { font-family: var(--font-mono); color: var(--ink); text-transform: none; letter-spacing: 0; }
+  .note { font-size: 0.88rem; color: var(--ink-soft); margin: 0.5rem 0 0; }
+  .panel { border: 1px solid var(--rule); border-left: 3px solid var(--accent); padding: 1.1rem 1.25rem; border-radius: 2px; }
+  .panel p { margin: 0 0 0.6rem; }
+  .status { display: flex; align-items: center; gap: 0.6rem; }
+  .dot { width: 0.8rem; height: 0.8rem; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
+  .dot[data-tier='ok'] { background: var(--ink-blue); border-color: var(--ink-blue); }
+  .dot[data-tier='warn'] { background: transparent; border-color: var(--accent); }
+  .dot[data-tier='bad'] { background: color-mix(in srgb, var(--accent) 55%, transparent); border-color: var(--accent); }
+  .dot[data-tier='dead'] { background: var(--accent); border-color: var(--accent); }
+  blockquote {
+    margin: 0.4rem 0 0.8rem; font-family: var(--font-mono); font-size: 0.95rem; line-height: 1.6; overflow-wrap: anywhere; min-height: 3.2rem;
+    color: var(--ink);
+  }
+  blockquote.none { color: var(--ink-soft); font-style: italic; font-family: var(--font-body); }
+  .tbl-wrap { overflow-x: auto; }
+  .bits { border-collapse: collapse; font-family: var(--font-mono); font-size: 0.78rem; width: 100%; min-width: 24rem; }
+  .bits th, .bits td { padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--rule); text-align: left; }
+  .bits th { font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); font-weight: 400; }
+  :global(.ws .nb) { padding: 0 0.08em; }
+  :global(.ws .nb.ch) { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  #ws-chart { width: 100%; max-width: 38rem; height: auto; display: block; }
+</style>
+
+<script>
+  const data = JSON.parse(document.getElementById('ws-data')!.textContent!);
+  const $ = (id: string) => document.getElementById(id)!;
+  const slider = $('ws-slider') as HTMLInputElement;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const M = 4294967296;
+  const wrap = (v: number, s: number) => (((v - s) % M) + M) % M;
+  const hex8 = (v: number) => v.toString(16).padStart(8, '0');
+  const fmt = (n: number) => n.toLocaleString('en-US');
+  const tierVar: Record<string, string> = { ok: 'var(--ink-blue)', warn: 'var(--accent)', bad: 'var(--accent)', dead: 'var(--accent)' };
+
+  function changed(shift: number) {
+    let n = 0;
+    for (const v of data.orig) {
+      const a = hex8(v), b = hex8(wrap(v, shift));
+      for (let i = 0; i < 8; i++) if (a[i] !== b[i]) n++;
+    }
+    return n;
+  }
+  function nibbles(el: HTMLElement, a: string, b: string | null) {
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement('span');
+      s.className = 'nb' + (b && b[i] !== a[i] ? ' ch' : '');
+      s.textContent = (b ?? a)[i];
+      el.appendChild(s);
+    }
+  }
+  function bits(shift: number) {
+    const body = document.querySelector('#ws-bits tbody')!; body.textContent = '';
+    data.orig.forEach((v: number, i: number) => {
+      const tr = document.createElement('tr');
+      const n = document.createElement('td'); n.textContent = String(i); tr.appendChild(n);
+      const a = hex8(v), b = hex8(wrap(v, shift));
+      const t1 = document.createElement('td'); nibbles(t1, a, null); tr.appendChild(t1);
+      const t2 = document.createElement('td'); nibbles(t2, b, a); tr.appendChild(t2);
+      body.appendChild(tr);
+    });
+    const ok = shift === 1000004
+      ? (data.orig.every((v: number, i: number) => wrap(v, shift) === data.saved1000004[i])
+          ? 'Check: at 1,000,004 the computed values match the ten values printed in notebook 05.'
+          : 'Check failed against notebook 05 output.')
+      : '';
+    $('ws-check').textContent = ok;
+  }
+  function chart(sel: number) {
+    const svg = $('ws-chart'); svg.textContent = '';
+    const W = 340, H = 150, pl = 28, pr = 8, pt = 10, pb = 34;
+    const n = data.stops.length, bw = (W - pl - pr) / n;
+    const y = (v: number) => pt + (1 - v / 80) * (H - pt - pb);
+    const mk = (t: string, a: Record<string, string | number>) => {
+      const e = document.createElementNS(svgNS, t); for (const k in a) e.setAttribute(k, String(a[k])); svg.appendChild(e); return e;
+    };
+    for (const t of [0, 40, 80]) {
+      mk('line', { x1: pl, x2: W - pr, y1: y(t), y2: y(t), stroke: 'var(--rule)' });
+      const tx = mk('text', { x: pl - 4, y: y(t) + 3, 'text-anchor': 'end', 'font-size': 8, fill: 'var(--ink-soft)', 'font-family': 'var(--font-mono)' }); tx.textContent = String(t);
+    }
+    data.stops.forEach((s: any, i: number) => {
+      const c = changed(s.shift), x = pl + i * bw + bw * 0.15;
+      const r = mk('rect', { x, y: y(c), width: bw * 0.7, height: Math.max(1, y(0) - y(c)), fill: tierVar[s.tier], opacity: s.tier === 'bad' ? 0.65 : 1 });
+      if (i === sel) { r.setAttribute('stroke', 'var(--ink)'); r.setAttribute('stroke-width', '2'); }
+      const lab = mk('text', { x: x + bw * 0.35, y: H - 20, 'text-anchor': 'end', 'font-size': 7, fill: 'var(--ink-soft)', 'font-family': 'var(--font-mono)', transform: `rotate(-40 ${x + bw * 0.35} ${H - 20})` });
+      lab.textContent = s.shift >= 1e6 ? (s.shift / 1e6).toString().replace(/\.0+$/, '') + 'M' : String(s.shift);
+    });
+    const t = mk('text', { x: 4, y: 8, 'font-size': 7, fill: 'var(--ink-soft)', 'font-family': 'var(--font-mono)' }); t.textContent = 'of 80';
+  }
+  function update() {
+    const i = Number(slider.value), s = data.stops[i];
+    $('ws-shift').textContent = fmt(s.shift) + ' (' + (s.shift / M * 100).toFixed(3) + '% of the uint32 range)';
+    $('ws-prompt').textContent = '"' + data.prompt + '"';
+    $('ws-status').textContent = s.status;
+    $('ws-dot').dataset.tier = s.tier;
+    const out = $('ws-out');
+    if (s.output) { out.textContent = '“' + s.output + '”'; out.className = ''; }
+    else { out.textContent = 'No output text saved for this shift. The repository records only a status note.'; out.className = 'none'; }
+    $('ws-src').textContent = 'Source: ' + s.source + '.';
+    bits(s.shift);
+    chart(i);
+  }
+  slider.addEventListener('input', update);
+  update();
+</script>

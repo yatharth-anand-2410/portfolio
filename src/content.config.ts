@@ -28,4 +28,18 @@ const work = defineCollection({
   }),
 });
 
-export const collections = { blog, work };
+// Anonymized production case studies ("field notes"). Never name the employer.
+const field = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/field' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    date: z.coerce.date(),
+    metric: z.string().optional(), // one headline number, e.g. "p50 230ms"
+    tags: z.array(z.string()).default([]),
+    order: z.number().default(99),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { blog, work, field };

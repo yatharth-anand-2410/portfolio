@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DecodingPlayground from '../../components/lab/DecodingPlayground.astro';
+import data from '../../data/lab/decoding.json';
+const repo = 'https://github.com/yatharth-anand-2410/llm-decoding-strategies';
+const loop = data.loop;
+const show = (s: string) => s.replace(/\n/g, '\\n').replace(/^ /, '␣');
+---
+
+<BaseLayout title="Decoding playground" description="Drag temperature, top-k, top-p and min-p over real next-token distributions from Qwen2.5-0.5B and watch the sampling pool change.">
+  <article class="wrap">
+    <header class="head">
+      <p class="label reveal" style="--i:0"><a href="/#lab">← Lab</a></p>
+      <h1 class="reveal" style="--i:1">Decoding playground</h1>
+      <p class="lede reveal" style="--i:2">A language model outputs scores; the decoding settings decide which tokens may be picked. These are real top candidates from Qwen2.5-0.5B. Move the sliders and the pool is recomputed in your browser.</p>
+    </header>
+
+    <div class="reveal" style="--i:3"><DecodingPlayground /></div>
+
+    <div class="cols">
+      <section>
+        <h2>What to try</h2>
+        <ul>
+          <li>Pick the context ending "…the speed of", where " light" holds 86%, and raise the temperature to 3 to watch the other shortlisted tokens gain on it.</li>
+          <li>Set top-p to 0.9 on the first context (flat) and then on "…the speed" (peaked). The nucleus is many tokens in one and a single token in the other.</li>
+          <li>Add min-p 0.2 with a high temperature. The cutoff scales with the top token, so it tightens on confident steps and relaxes on uncertain ones.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Why this matters in production</h2>
+        <p>Decoding settings change reliability as much as prompts do. A temperature that suits a drafting task makes a tool-calling agent emit malformed arguments, and fully greedy decoding can lock into a loop that burns tokens until a timeout. Pinning and logging these settings per step is part of making an agent reproducible.</p>
+      </section>
+    </div>
+
+    <section class="finds">
+      <h2>Findings from the notebooks</h2>
+      <h3>The greedy trap: "{loop.prompt}"</h3>
+      <p>Greedy decoding always picks the top token. These are the saved numbers for the first five steps. Entropy fell from {loop.steps[0].entropy} to {loop.steps[2].entropy} bits by step 3 as the model locked on, then rose to {loop.steps[4].entropy}. The top token held 80% and 76% at steps 3 and 4. The 30-token continuation never left the loop: <code>…a cat is a cat is a cat is a…</code></p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Step</th><th>Entropy (bits)</th><th>Top 3 next tokens</th></tr></thead>
+          <tbody>
+            {loop.steps.map((s) => (
+              <tr><td>{s.step}</td><td>{s.entropy}</td><td>{s.top.map((t) => `${show(t[0] as string)} ${((t[1] as number) * 100).toFixed(1)}%`).join(' · ')}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="small">The repo README states that entropy fell to 0.002 within five steps. The saved notebook output above does not show that, so the page reports only what the output contains.</p>
+
+      <h3>Why min-p: fixed filters on a broken distribution</h3>
+      <p>On Llama 3 8B (4-bit MLX), the same two filters produced very different pools when the distribution was damaged. Top-p 0.9 kept the whole vocabulary; min-p 0.05 kept a handful.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Condition</th><th>Top-p 0.9 pool</th><th>Min-p 0.05 pool</th></tr></thead>
+          <tbody>
+            {data.minp.rows.map((r) => (
+              <tr><td>{r.setting}</td><td>{r.top_p_pool.toLocaleString('en-US')} tokens</td><td>{r.min_p_pool} tokens</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="src label">Data: <a href={`${repo}/blob/main/${data.source.split(' ')[0]}`}>{data.source.split(' ')[0]}</a> and 11_min_p_sampling.ipynb. Code and notebooks: <a href={repo}>llm-decoding-strategies</a>.</p>
+  </article>
+</BaseLayout>
+
+<style>
+  .head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: 2rem; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 4rem); margin-top: 1rem; }
+  .lede { max-width: 56ch; font-size: 1.1em; color: var(--ink-soft); }
+  .cols { display: grid; gap: 2rem 3rem; grid-template-columns: minmax(0, 1fr); margin-top: 3rem; }
+  @media (min-width: 56rem) { .cols { grid-template-columns: 1fr 1fr; } }
+  .cols h2, .finds h2 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
+  ul { padding-left: 1.2em; margin: 0; }
+  li { margin-bottom: 0.6em; }
+  .finds { margin-top: 3rem; max-width: 52rem; }
+  .finds h3 { margin-top: 1.6em; font-size: 1.15rem; }
+  .tw { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 0.5rem 0 1rem; }
+  th, td { text-align: left; padding: 0.55rem 0.8rem 0.55rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  code { font-family: var(--font-mono); font-size: 0.82em; background: var(--paper-2); padding: 0.1em 0.35em; border-radius: 3px; }
+  .small { font-size: 0.85rem; color: var(--ink-soft); }
+  .src { margin: 3rem 0 4rem; text-transform: none; letter-spacing: 0.02em; line-height: 1.8; }
+</style>
