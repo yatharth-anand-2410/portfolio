@@ -5,6 +5,9 @@ kind: "Product"
 status: "Deployed, proof-of-concept stage (Bihar corn-seed campaign)"
 stack: ["Django", "Postgres", "React", "Gemini", "ElevenLabs", "WhatsApp (Twilio / Meta)", "Sentinel-2 / emem", "Render", "Vercel"]
 liveUrl: "https://agrivoice-rho.vercel.app"
+video: "/videos/agrivoice-demo.mp4"
+poster: "/videos/agrivoice-demo.jpg"
+videoCaption: "Product walkthrough · seeded demo company, simulated conversations"
 order: 2
 ---
 

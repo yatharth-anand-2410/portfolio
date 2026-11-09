@@ -25,6 +25,7 @@ const work = defineCollection({
     repoUrl: z.url().optional(),
     video: z.string().optional(), // path under /public, e.g. /videos/x.mp4
     poster: z.string().optional(),
+    videoCaption: z.string().optional(),
     order: z.number().default(99),
     draft: z.boolean().default(false),
   }),

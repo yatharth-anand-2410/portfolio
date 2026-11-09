@@ -10,7 +10,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, summary, kind, status, stack, liveUrl, repoUrl, video, poster } = entry.data;
+const { title, summary, kind, status, stack, liveUrl, repoUrl, video, poster, videoCaption } = entry.data;
 ---
 
 <BaseLayout title={title} description={summary}>
@@ -34,7 +34,7 @@ const { title, summary, kind, status, stack, liveUrl, repoUrl, video, poster } =
       {video && (
         <figure class="demo reveal" style="--i:3">
           <video src={video} poster={poster} controls muted playsinline preload="none" width="1920" height="1080"></video>
-          <figcaption class="label">Product walkthrough · demo account with sample games</figcaption>
+          <figcaption class="label">{videoCaption ?? "Product walkthrough"}</figcaption>
         </figure>
       )}
       <div class="prose reveal" style="--i:3"><Content /></div>

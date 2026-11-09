@@ -8,6 +8,7 @@ liveUrl: "https://www.chessmasterss.in"
 repoUrl: "https://github.com/yatharth-anand-2410/chess-masters"
 video: "/videos/chessmasters-demo.mp4"
 poster: "/videos/chessmasters-demo.jpg"
+videoCaption: "Product walkthrough · demo account with sample games"
 order: 1
 ---
 
