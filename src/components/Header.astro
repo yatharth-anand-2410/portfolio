@@ -1,5 +1,5 @@
 ---
-import { UPWORK_URL } from '../data/site';
+import { MAILTO } from '../data/site';
 const path = Astro.url.pathname;
 const links = [
   { href: '/work', label: 'Work' },
@@ -22,7 +22,7 @@ const links = [
       </ul>
     </nav>
     <div class="actions">
-      <a class="hire mono" href={UPWORK_URL} rel="noopener">Hire on Upwork</a>
+      <a class="hire mono" href={MAILTO}>Request an audit</a>
       <button class="theme mono" id="theme-toggle" type="button" aria-label="Toggle light and dark theme">
         <span class="t-light">Light</span><span class="t-dark">Dark</span>
       </button>

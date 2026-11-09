@@ -1,70 +1,97 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { offers, UPWORK_URL } from '../data/site';
+import { MAILTO, LINKEDIN_URL } from '../data/site';
+
+const gets = [
+  'A ranked list of fixes, each with an estimated saving and the effort to ship it',
+  'A measured test of the top one or two changes on a sample of your real prompts',
+  'A small test set of about 30 cases, so you can see that quality holds after each change',
+  'A short written report you can hand to your team',
+];
+const send = [
+  'Which models and provider you use, and roughly what you spend per month',
+  'An anonymized export of recent usage, or a sample of requests',
+  'A handful of representative prompts and the tools your agent calls',
+];
 ---
 
-<BaseLayout title="Services" description="Hire a senior ML engineer for WhatsApp and voice AI agents, document Q&A chatbots, and LLM cost audits.">
+<BaseLayout title="LLM Cost & Reliability Audit" description="A fixed-price audit for teams running LLM features: find where the spend goes, cut it, and prove quality holds.">
   <section class="wrap head">
     <p class="label reveal" style="--i:0">Services</p>
-    <h1 class="reveal" style="--i:1">What I can build for you.</h1>
+    <h1 class="reveal" style="--i:1">Find where your LLM spend goes, and cut it without breaking quality.</h1>
     <p class="lede reveal" style="--i:2">
-      Three kinds of work I take on, each scoped before it starts. Everything is arranged
-      through Upwork, so you get payment protection and a clear record of the work.
+      A fixed-price audit for teams already running AI features in production. One workload, three to
+      five days, and a plan you can act on.
     </p>
-    <p class="reveal" style="--i:3"><a class="btn" href={UPWORK_URL} rel="noopener">Hire me on Upwork</a></p>
+    <p class="cta reveal" style="--i:3">
+      <a class="btn" href={MAILTO}>Request an audit</a>
+      <a href={LINKEDIN_URL} rel="me">Or message me on LinkedIn</a>
+    </p>
   </section>
 
-  <section class="wrap" aria-label="Offers">
-    <ol class="offers">
-      {offers.map((o, i) => (
-        <li class="offer reveal" style={`--i:${i + 4}`}>
-          <span class="num label">{String(i + 1).padStart(2, '0')}</span>
-          <div class="main">
-            <h2>{o.name}</h2>
-            <p class="tag">{o.tagline}</p>
-            <p class="who"><span class="label">Good fit if</span><br />{o.forWho}</p>
-          </div>
-          <div class="get">
-            <p class="label">You get</p>
-            <ul>{o.youGet.map((g) => <li>{g}</li>)}</ul>
-            <p class="proof"><a href={o.proof.href}>{o.proof.label} →</a></p>
-          </div>
-        </li>
-      ))}
-    </ol>
+  <section class="wrap grid">
+    <div class="col reveal" style="--i:4">
+      <h2 class="label sect">What you get</h2>
+      <ul>{gets.map((g) => <li>{g}</li>)}</ul>
+    </div>
+    <div class="col reveal" style="--i:5">
+      <h2 class="label sect">What I need from you</h2>
+      <ul>{send.map((s) => <li>{s}</li>)}</ul>
+      <p class="note">I never need your API keys or access to production.</p>
+    </div>
   </section>
 
-  <section class="wrap how">
-    <h2 class="label sect">How it works</h2>
-    <ol class="steps">
-      <li><strong>Message me on Upwork</strong> with what you want to achieve.</li>
-      <li><strong>I reply with a scoped plan</strong> and a fixed price for a first milestone.</li>
-      <li><strong>You review working software</strong> at each milestone, not a promise.</li>
-    </ol>
+  <section class="wrap rows">
+    <div class="row-item reveal" style="--i:6">
+      <h2 class="label sect">Who it fits</h2>
+      <p>
+        Teams whose model bill or error rate is growing: an agent that retries too often, prompts that
+        carry too much context, or no way to tell whether a change made things better or worse.
+        If your spend is small, say under about $2,000 a month, the audit may not pay for itself, and I'll tell you so.
+      </p>
+    </div>
+    <div class="row-item reveal" style="--i:7">
+      <h2 class="label sect">How it works</h2>
+      <ol>
+        <li><strong>A 15-minute call</strong> to understand the workload and agree what's in scope.</li>
+        <li><strong>A fixed price,</strong> from $500 for one workload, agreed before I start.</li>
+        <li><strong>Three to five days</strong> of analysis and testing on the material you send.</li>
+        <li><strong>A walkthrough</strong> of the report. Fixing things afterwards is a separate, optional piece of work.</li>
+      </ol>
+    </div>
+    <div class="row-item reveal" style="--i:8">
+      <h2 class="label sect">Why me</h2>
+      <p>
+        I build and run production agent systems, and I measure them. In my day job I've reduced LLM
+        inference cost by about 50% through prompt caching and context optimization. In
+        <a href="/work/agrivoice/">AgriVoice</a>, every model call is logged with its tokens and purpose,
+        and failures are retried with backoff. I've also sent a
+        <a href="https://github.com/getzep/graphiti/pull/1764">merged fix</a> to an open-source
+        agent-memory library.
+      </p>
+      <p class="note">I don't promise a specific saving before I've seen your usage. That depends on your workload.</p>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   .head { padding-top: clamp(3rem, 8vw, 6rem); padding-bottom: 2rem; }
-  .lede { max-width: 52ch; font-size: 1.2em; color: var(--ink-soft); }
+  .head h1 { font-size: clamp(2.2rem, 5.5vw, 4.2rem); max-width: 20ch; margin-block: 1rem 1.2rem; }
+  .lede { max-width: 54ch; font-size: 1.2em; color: var(--ink-soft); }
+  .cta { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin-top: 1.8rem; }
   .btn {
-    display: inline-block; margin-top: 0.5rem; padding: 0.8rem 1.4rem; background: var(--accent); color: var(--paper);
+    display: inline-block; padding: 0.8rem 1.4rem; background: var(--accent); color: var(--paper);
     font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
     background-image: none; border-radius: 2px;
   }
   .btn:hover { color: var(--paper); filter: brightness(0.9); }
-  .offers { list-style: none; margin: 1.5rem 0 0; padding: 0; border-top: 1px solid var(--rule); }
-  .offer { display: grid; gap: 1.2rem 2.5rem; padding-block: 2.2rem; border-bottom: 1px solid var(--rule); grid-template-columns: 1fr; }
-  @media (min-width: 60rem) { .offer { grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1fr); } }
-  .num { color: var(--accent); }
-  .main h2 { margin-bottom: 0.4rem; }
-  .tag { font-size: 1.1em; }
-  .who { color: var(--ink-soft); font-size: 0.95em; }
-  .get ul { margin: 0.4rem 0 1rem; padding-left: 1.1em; color: var(--ink-soft); font-size: 0.95em; }
-  .get li { margin-bottom: 0.4rem; }
-  .proof { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
-  .how { padding-top: 2rem; }
-  .sect { border-top: 1px solid var(--accent); padding-top: 0.7rem; margin-bottom: 1.2rem; font-weight: 400; }
-  .steps { padding-left: 1.2em; max-width: 56ch; }
-  .steps li { margin-bottom: 0.7rem; }
+  .grid { display: grid; gap: 2rem 3rem; grid-template-columns: 1fr; padding-top: 2rem; }
+  @media (min-width: 52rem) { .grid { grid-template-columns: 1fr 1fr; } }
+  .sect { border-top: 1px solid var(--accent); padding-top: 0.7rem; margin: 0 0 1rem; font-weight: 400; }
+  .col ul { padding-left: 1.1em; margin: 0; color: var(--ink-soft); }
+  .col li { margin-bottom: 0.6rem; }
+  .note { color: var(--ink-soft); font-size: 0.92em; margin-top: 1rem; }
+  .rows { display: grid; gap: 2.2rem; padding-top: clamp(2rem, 5vw, 3.5rem); max-width: 52rem; margin-inline: 0; }
+  .row-item ol { padding-left: 1.2em; margin: 0; }
+  .row-item li { margin-bottom: 0.6rem; }
 </style>
