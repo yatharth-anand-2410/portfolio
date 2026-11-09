@@ -56,17 +56,32 @@ const demoPage: Record<string, string> = { leadforge: '/demos/leadforge/' };
       <h2>Projects</h2>
       <ul class="list">
         {work.map((w) => (
-          <li>
-            <a href={`/work/${w.id}/`}>{w.data.title.split(':')[0]}</a>
-            <span class="meta">
-              {[
-                w.data.video && 'video',
-                w.data.liveUrl && <a href={w.data.liveUrl}>live</a>,
-                demoPage[w.id] && <a href={demoPage[w.id]}>replay demo</a>,
-                w.data.repoUrl && <a href={w.data.repoUrl}>code</a>,
-              ].filter(Boolean).map((x, i) => <>{i > 0 && ' · '}{x}</>)}
-            </span>
-            <p>{w.data.summary}</p>
+          <li class={w.data.video ? 'has-video' : undefined}>
+            <div class="proj-text">
+              <a href={`/work/${w.id}/`}>{w.data.title.split(':')[0]}</a>
+              <span class="meta">
+                {[
+                  w.data.liveUrl && <a href={w.data.liveUrl}>live</a>,
+                  demoPage[w.id] && <a href={demoPage[w.id]}>replay demo</a>,
+                  w.data.repoUrl && <a href={w.data.repoUrl}>code</a>,
+                ].filter(Boolean).map((x, i) => <>{i > 0 && ' · '}{x}</>)}
+              </span>
+              <p>{w.data.summary}</p>
+            </div>
+            {w.data.video && (
+              <video
+                class="proj-video"
+                src={w.data.video}
+                poster={w.data.poster}
+                controls
+                muted
+                playsinline
+                preload="none"
+                width="1920"
+                height="1080"
+                aria-label={`${w.data.title.split(':')[0]} demo video`}
+              ></video>
+            )}
           </li>
         ))}
       </ul>
@@ -135,6 +150,9 @@ const demoPage: Record<string, string> = { leadforge: '/demos/leadforge/' };
   .list { list-style: none; padding: 0; margin: 0; }
   .list li { margin-bottom: 1.1rem; }
   .list p { margin: 0.15rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .list li.has-video { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; gap: 1rem; align-items: start; }
+  .proj-video { width: 100%; height: auto; display: block; border: 1px solid var(--rule); background: #000; aspect-ratio: 16 / 9; }
+  @media (max-width: 36rem) { .list li.has-video { grid-template-columns: 1fr; } .proj-video { max-width: 22rem; } }
   .meta { color: var(--ink-soft); font-size: 0.85rem; margin-left: 0.4rem; }
   .meta a { color: var(--ink-soft); }
   .plain { padding-left: 1.2rem; }
